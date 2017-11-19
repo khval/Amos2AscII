@@ -26,6 +26,15 @@ struct reference
 	char flags;
 } __attribute__((packed)) ;
 
+
+struct procedure
+{
+	unsigned int ProcLength;
+	unsigned short seed;
+	char flags;
+	char seed2;
+} __attribute__((packed)) ;
+
 void cmdExtensionCommand(FILE *fd,char *ptr)
 {
 	struct extensionCommand *e = (struct extensionCommand *) ptr;
@@ -40,6 +49,12 @@ void cmdCallProcedure(FILE *fd, char *ptr)
 	fread(buffer, ref -> length, 1, fd);
 	buffer[ ref -> length ] = 0;
 	printf("%s",buffer);
+}
+
+void cmdProcedure(FILE *fd, char *ptr)
+{
+	struct procedure *p = (struct procedure *) ptr;
+	printf("Procedure ");
 }
 
 void cmdVar(FILE *fd, char *ptr)
@@ -62,20 +77,41 @@ void cmdInt(FILE *fd,char *ptr)
 	printf("%d", *((int *) ptr));
 }
 
-void cmdComma(FILE *fd,char *ptr)
+void cmdFor (FILE *fd,char *ptr)
 {
-	printf(",");
+	printf("For ");
 }
 
-void cmdPlus(FILE *fd,char *ptr)
+void cmdRepeat(FILE *fd,char *ptr)
 {
-	printf("+");
+	printf("Repeat");
 }
 
-void cmdMinus(FILE *fd,char *ptr)
+void cmdWhile(FILE *fd,char *ptr)
 {
-	printf("-");
+	printf("While ");
 }
+
+void cmdDo(FILE *fd,char *ptr)
+{
+	printf("Do");
+}
+
+void cmdIf(FILE *fd,char *ptr)
+{
+	printf("If ");
+}
+
+void cmdElse(FILE *fd,char *ptr)
+{
+	printf("Else");
+}
+
+void cmdData(FILE *fd,char *ptr)
+{
+	printf("Data");
+}
+
 
 void cmdNewLine(FILE *fd,char *ptr)
 {
@@ -95,11 +131,17 @@ struct callTable CallTable[] =
 	{0x0000,2,cmdNewLine},
 	{0x003E,sizeof(int),cmdInt},
 	{0x004E,sizeof(struct extensionCommand),cmdExtensionCommand},
-	{0x005C,0,cmdComma},
-//	{0x0094,0,cmdMinus},
-	{0xFFC0,0,cmdPlus},
 	{0x0006,sizeof(struct reference),cmdVar},
-	{0x0012,sizeof(struct reference),cmdCallProcedure}
+	{0x0012,sizeof(struct reference),cmdCallProcedure},
+	{0x0376,sizeof(struct procedure),cmdProcedure},
+
+	{0x023C,2,cmdFor},
+	{0x0250,2,cmdRepeat},
+	{0x0268,2,cmdWhile},
+	{0x027E,2,cmdDo},
+	{0x02BE,2,cmdIf},
+	{0x02D0,2,cmdElse},
+	{0x0404,2,cmdData}
 };
 
 
@@ -122,6 +164,11 @@ BOOL token_reader( FILE *fd, unsigned token )
 		} 
 	}
 
+	if (findSymbol(token))
+	{
+		return TRUE;
+	}
+
 	if (findNativeCommand(token))
 	{
 		last_command = TRUE;
@@ -129,7 +176,7 @@ BOOL token_reader( FILE *fd, unsigned token )
 	}
 	else
 	{
-		printf("Token %04x not found\n", token );
+		printf("\n\nERROR: File pos %08X -- Token %04X not found\n\n",  ftell(fd), token );
 	}
 
 	return FALSE;
