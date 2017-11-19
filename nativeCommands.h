@@ -7,4 +7,5 @@ struct nativeCommand
 
 extern struct nativeCommand NativeCommand[];
 extern BOOL findNativeCommand(unsigned short token);
+BOOL findSymbol(unsigned short token);
 
