@@ -52,26 +52,29 @@ void cmdCallProcedure(FILE *fd, char *ptr)
 	printf("%s",buffer);
 }
 
-void cmdLabel(FILE *fd, char *ptr)
+void cmdLabelOnLine(FILE *fd, char *ptr)
 {
+	int what;
 	char buffer[100];
 	struct reference *ref = (struct reference *) ptr;
 	int length2 = ref -> length + (ref -> length & 1);
 
 	fread(buffer, length2, 1, fd);
-
-	printf("[%d]\n",buffer[0]);
-	printf("[%d]\n",buffer[1]);
-	printf("[%d]\n",buffer[2]);
-
-	buffer[ 0 ] = '*';
-	buffer[ 1 ] = '*';
-	buffer[ 2 ] = '*';
-
 	buffer[ ref -> length ] = 0;
-	printf("[%s]\n",buffer);
+	printf("%s:",buffer);
+}
 
-	printf("%d,%d\n",ref -> length, length2);
+
+void cmdLabel(FILE *fd, char *ptr)
+{
+	int what;
+	char buffer[100];
+	struct reference *ref = (struct reference *) ptr;
+	int length2 = ref -> length + (ref -> length & 1);
+
+	fread(buffer, length2, 1, fd);
+	buffer[ ref -> length ] = 0;
+	printf("%s",buffer);
 }
 
 void cmdProcedure(FILE *fd, char *ptr)
@@ -198,7 +201,8 @@ struct callTable CallTable[] =
 	{0x004E,sizeof(struct extensionCommand),cmdExtensionCommand},
 	{0x0006,sizeof(struct reference),cmdVar},
 	{0x0012,sizeof(struct reference),cmdCallProcedure},
-	{0x0018,sizeof(struct procedure),cmdLabel},
+	{0x000C,sizeof(struct reference),cmdLabelOnLine},		// label on line
+	{0x0018,sizeof(struct reference),cmdLabel},		// ref
 	{0x0376,sizeof(struct procedure),cmdProcedure},
 
 	{0x029E,4,cmdExit},

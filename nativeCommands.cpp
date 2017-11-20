@@ -9,7 +9,9 @@ struct nativeCommand Symbol[]=
 {
 	{0x005C,","},
 	{0xFFC0,"+"},
+	{0xFFCA,"-"},
 	{0xFFA2,"="},
+	{0xFFE2,"*"},
 	{0xFFEC,"/"},
 	{0xFFB6,">"},
 	{0xFFAC,"<"},
@@ -64,8 +66,12 @@ struct nativeCommand NativeCommand[]=
 	{0x0BB8,"Cls"},
 	{0x09A8,"Screen Copy"},
 	{0x0ADA,"Screen Show"},
-	{0x02B2,"Gosub"}
-
+	{0x02B2,"Gosub "},
+	{0x02A8,"Goto "},
+	{0x0360,"Return" },
+	{0x0ED8,"Box"},
+	{0x033C,"Pop Proc"},
+	{0x014C,"length"}
 };
 
 BOOL findSymbol(unsigned short token)
