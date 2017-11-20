@@ -44,11 +44,34 @@ void cmdExtensionCommand(FILE *fd,char *ptr)
 void cmdCallProcedure(FILE *fd, char *ptr)
 {
 	char buffer[100];
-
 	struct reference *ref = (struct reference *) ptr;
-	fread(buffer, ref -> length, 1, fd);
+	int length2 = ref -> length + (ref -> length & 1);
+
+	fread(buffer, length2, 1, fd);
 	buffer[ ref -> length ] = 0;
 	printf("%s",buffer);
+}
+
+void cmdLabel(FILE *fd, char *ptr)
+{
+	char buffer[100];
+	struct reference *ref = (struct reference *) ptr;
+	int length2 = ref -> length + (ref -> length & 1);
+
+	fread(buffer, length2, 1, fd);
+
+	printf("[%d]\n",buffer[0]);
+	printf("[%d]\n",buffer[1]);
+	printf("[%d]\n",buffer[2]);
+
+	buffer[ 0 ] = '*';
+	buffer[ 1 ] = '*';
+	buffer[ 2 ] = '*';
+
+	buffer[ ref -> length ] = 0;
+	printf("[%s]\n",buffer);
+
+	printf("%d,%d\n",ref -> length, length2);
 }
 
 void cmdProcedure(FILE *fd, char *ptr)
@@ -102,6 +125,11 @@ void cmdIf(FILE *fd,char *ptr)
 	printf("If ");
 }
 
+void cmdExit(FILE *fd,char *ptr)
+{
+	printf("Exit");
+}
+
 void cmdElse(FILE *fd,char *ptr)
 {
 	printf("Else");
@@ -112,12 +140,47 @@ void cmdData(FILE *fd,char *ptr)
 	printf("Data");
 }
 
-
 void cmdNewLine(FILE *fd,char *ptr)
 {
 	struct tokenStart *TokenStart = (struct tokenStart *) ptr;
 //	printf("\nlength %d level %d\n", TokenStart->length * 2, TokenStart->level );
 	printf("\n");
+}
+
+void cmdDoubleQuotes(FILE *fd,char *ptr)
+{
+	unsigned short length = *((unsigned short *) ptr);
+	unsigned short length2 = length;
+	char *txt;
+
+	length2 += (length & 1);		// align to 2 bytes
+	txt = (char *) malloc(length2+1);
+
+	if (txt)
+	{
+		txt[length] = 0;
+		fread(txt,length2,1,fd);
+		printf("%c%s%c",'"',txt,'"');
+		free(txt);
+	}
+}
+
+void cmdSingelQuotes(FILE *fd,char *ptr)
+{
+	unsigned short length = *((unsigned short *) ptr);
+	unsigned short length2 = length;
+	char *txt;
+
+	length2 += (length & 1);		// align to 2 bytes
+	txt = (char *) malloc(length2+1);
+
+	if (txt)
+	{
+		txt[length] = 0;
+		fread(txt,length2,1,fd);
+		printf("%c%s%c",0x27,txt,0x27);
+		free(txt);
+	}
 }
 
 struct callTable{
@@ -129,19 +192,24 @@ struct callTable{
 struct callTable CallTable[] =
 {
 	{0x0000,2,cmdNewLine},
+	{0x0026,2,cmdDoubleQuotes},
+	{0x002E,2,cmdSingelQuotes},
 	{0x003E,sizeof(int),cmdInt},
 	{0x004E,sizeof(struct extensionCommand),cmdExtensionCommand},
 	{0x0006,sizeof(struct reference),cmdVar},
 	{0x0012,sizeof(struct reference),cmdCallProcedure},
+	{0x0018,sizeof(struct procedure),cmdLabel},
 	{0x0376,sizeof(struct procedure),cmdProcedure},
 
+	{0x029E,4,cmdExit},
 	{0x023C,2,cmdFor},
 	{0x0250,2,cmdRepeat},
 	{0x0268,2,cmdWhile},
 	{0x027E,2,cmdDo},
 	{0x02BE,2,cmdIf},
 	{0x02D0,2,cmdElse},
-	{0x0404,2,cmdData}
+	{0x0404,2,cmdData},
+
 };
 
 

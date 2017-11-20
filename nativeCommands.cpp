@@ -12,7 +12,9 @@ struct nativeCommand Symbol[]=
 	{0xFFA2,"="},
 	{0xFFEC,"/"},
 	{0xFFB6,">"},
-	{0xFFAC,"<"}
+	{0xFFAC,"<"},
+	{0xFF98,">="},
+	{0xFF84,"<="}
 };
 
 
@@ -45,7 +47,25 @@ struct nativeCommand NativeCommand[]=
 	{0x1378,"Locate "},
 	{0x0476,"Print "},
 	{0x0286,"Loop "},
-//	{0x2962,"Unkown "},
+	{0x2962,"Errtrap"},
+	{0x0246,"Next"},
+	{0x0670,"Edit"},
+	{0x0390,"End Proc"},
+	{0x1F94,"Channel"},
+	{0x0A18,"Screen Display"},
+	{0x2012,"Amal"},
+	{0x1FBC,"Amal on"},
+	{0x1FE2,"Amal off"},
+	{0x09EA,"Screen Open"},
+	{0x0C84,"Hires"},
+	{0x1446,"Curs Off"},
+	{0x0D34,"Flash Off"},
+	{0x0B90,"Get Palette"},
+	{0x0BB8,"Cls"},
+	{0x09A8,"Screen Copy"},
+	{0x0ADA,"Screen Show"},
+	{0x02B2,"Gosub"}
+
 };
 
 BOOL findSymbol(unsigned short token)
