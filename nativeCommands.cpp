@@ -4,10 +4,16 @@
 #include <string.h>
 #include <proto/exec.h>
 #include "nativeCommands.h"
+#include "amos2ascii.h"
 
 struct nativeCommand Symbol[]=
 {
 	{0x005C,","},
+	{0x0064,";"},
+	{0x0074,"("},
+	{0x007C,")"},
+	{0x0084,"["},
+	{0x008C,"]"},
 	{0xFFC0,"+"},
 	{0xFFCA,"-"},
 	{0xFFA2,"="},
@@ -16,62 +22,114 @@ struct nativeCommand Symbol[]=
 	{0xFFB6,">"},
 	{0xFFAC,"<"},
 	{0xFF98,">="},
-	{0xFF84,"<="}
+	{0xFF84,"<="},
+	{0xFF66,"<>"}
 };
 
 
 struct nativeCommand NativeCommand[]=
 {
-	{0xAC0,"Screen Hide"},
-	{0x1e6e,"Limit Mouse"},
+	{0x0054," :"},
 	{0x0094," To"},
+	{0x00F2,"Inkey$"},
+	{0x0140,"Start"},
+	{0x014C,"Length"},
+	{0x015A,"Doke"},
+	{0x0246,"Next"},
+	{0x0286,"Loop "},
+	{0x02A8,"Goto "},
+	{0x02B2,"Gosub "},
+	{0x02C6," then "},
+	{0x033C,"Pop Proc"},
+	{0x0360,"Return" },
+	{0x0390,"End Proc"},
 	{0x03AA,"Global"},
-	{0x0084,"["},
-	{0x008C,"]"},
+	{0x0476,"Print "},
+	{0x050E,"Mid$"},
+	{0x055E,"Space$"},
+	{0x057C,"Upper$"},
+	{0x05A4,"Val"},
+	{0x05DA,"Len"},
+	{0x05E4,"Instr"},
+	{0x0670,"Edit"},
+	{0x06EA,"Min"},
+	{0x09A8,"Screen Copy"},
+	{0x09EA,"Screen Open"},
+	{0x0A04,"Screen Close "},
+	{0x0A18,"Screen Display"},
+	{0x0A88,"Screen To Front "},
+	{0x0AA6,"Screen To Back "},
+	{0x0AC0,"Screen Hide"},
+	{0x0ADA,"Screen Show"},
+	{0x0B90,"Get Palette"},
+	{0x0BB8,"Cls"},
 	{0x0C1E,"X Screen"},
 	{0x0c38,"Y Screen"},
-	{0x0074,"("},
-	{0x007C,")"},
+	{0x0C6E,"Screen"},		// setScreen
+	{0x0C7C,"Screen"},	// getScreen
+	{0x0C84,"Hires"},
+	{0x0D34,"Flash Off"},
+	{0x0ED8,"Box"},
+	{0x1262,"Scancode"},
+	{0x129E,"Wait "},
+	{0x1378,"Locate "},
+	{0x1446,"Curs Off"},
+	{0x15F2,"Y Curs"},
+	{0x16B6,"Scin"},
 	{0x1E16,"X Mouse"},
 	{0x1E24,"Y Mouse"},
 	{0x1E32,"Mouse Key"},
-	{0x16B6,"Scin"},
-	{0xFF58," and"},
-	{0x02C6," then "},
-	{0x0C6E,"Screen"},		// setScreen
-	{0x0C7C,"Screen"},	// getScreen
-	{0x0A04,"Screen Close "},
-	{0x0AA6,"Screen To Back "},
-	{0x0A88,"Screen To Front "},
-	{0x0054," : "},
-	{0x259A,"Trap "},
-	{0x129E,"Wait "},
-	{0x1378,"Locate "},
-	{0x0476,"Print "},
-	{0x0286,"Loop "},
-	{0x2962,"Errtrap"},
-	{0x0246,"Next"},
-	{0x0670,"Edit"},
-	{0x0390,"End Proc"},
+	{0x1e6e,"Limit Mouse"},
 	{0x1F94,"Channel"},
-	{0x0A18,"Screen Display"},
-	{0x2012,"Amal"},
 	{0x1FBC,"Amal on"},
 	{0x1FE2,"Amal off"},
-	{0x09EA,"Screen Open"},
-	{0x0C84,"Hires"},
-	{0x1446,"Curs Off"},
-	{0x0D34,"Flash Off"},
-	{0x0B90,"Get Palette"},
-	{0x0BB8,"Cls"},
-	{0x09A8,"Screen Copy"},
-	{0x0ADA,"Screen Show"},
-	{0x02B2,"Gosub "},
-	{0x02A8,"Goto "},
-	{0x0360,"Return" },
-	{0x0ED8,"Box"},
-	{0x033C,"Pop Proc"},
-	{0x014C,"length"}
+	{0x2012,"Amal"},
+	{0x210A,"Reserve As Chip Work"},
+	{0x215E,"Erase"},
+	{0x216A,"List Bank"},
+	{0x21AA,"Copy"},
+	{0x2498,"Bank Swap"},
+	{0x259A,"Trap "},
+	{0x2962,"Errtrap"},
+	{0x4FE,"Set Buffers"},
+	{0x0640,"Dim"},
+	{0x2B72,"Kill Editor"},
+	{0x0426,"Break Off"},
+	{0x06CA,"Degree"},
+	{0x0CCA,"Wait Vbl"},
+	{0x0462,"Add"},
+	{0x02DA,"End if"},
+	{0x20BA,"X Bob"},
+	{0x20C6,"Y Bob"},
+	{0x1B9E,"Bob"},
+	{0x11D8,"Key State"},
+	{0x0D1C,"Colour"},
+	{0x24AA,"Amos To Front"},
+	{0x0356," Step"},
+	{0x1FCA,"Amal On"},
+	{0x1930,"Kill"},
+	{0x18A8,"Open Random"},
+	{0x1948,"Field"},
+	{0x01E6," As"},
+	{0x056C,"String$"},
+	{0x0552,"Chr$"},
+	{0x23AC,"Put"},
+	{0x190C,"Close"},
+	{0x174E,"Exist"},
+	{0x16F2,"Set Input"},
+	{0x18BC,"Open In"},
+	{0x01DC,"Asc"},
+	{0x049C,"Input$"},
+	{0x04BE,"Line Input"},
+	{0x23E0,"I Bob"},
+	{0x1A72,"Sprite Base"},
+	{0x21F2,"Deek"},
+	{0x009C,"Not"},
+	{0xFF58,"and"},
+	{0xFF4C,"or"},
+	{0x1050,"Ink"},
+	{0x0F4A,"Text"},
+	{0x03E2,"Param"}
 };
 
 BOOL findSymbol(unsigned short token)
@@ -81,10 +139,13 @@ BOOL findSymbol(unsigned short token)
 
 	for (ptr =Symbol ; ptr < Symbol + size ; ptr++ )
 	{
-//		printf("token %04x, Symbol: %04x, %s\n", token, ptr->id, ptr-> name);
-
 		if (token == ptr->id ) 
 		{
+			if (token != 0x0074)
+			{
+				if (last_token_is == is_command) printf(" ");
+			}
+
 			printf("%s", ptr -> name);
 			return TRUE;
 		}
