@@ -23,7 +23,8 @@ struct nativeCommand Symbol[]=
 	{0xFFAC,"<"},
 	{0xFF98,">="},
 	{0xFF84,"<="},
-	{0xFF66,"<>"}
+	{0xFF66,"<>"},
+	{0xFFF6,"^"}
 };
 
 
@@ -127,9 +128,24 @@ struct nativeCommand NativeCommand[]=
 	{0x009C,"Not"},
 	{0xFF58,"and"},
 	{0xFF4C,"or"},
+	{0x1044,"Ink"},
 	{0x1050,"Ink"},
 	{0x0F4A,"Text"},
-	{0x03E2,"Param"}
+	{0x03E2,"Param"},
+	{0x0EC8,"Bar"},
+	{0x0C90,"Lowres"},
+	{0x0B58,"Screen Width"},
+	{0x0B74,"Screen Height"},
+	{0x0A5E,"Screen Color"},
+	{0x2B58,"Screen Mode"},
+	{0x0986,"Screen Copy"},
+	{0x012C,"Double Buffer"},
+	{0x072C,"Acos"},
+	{0x0702,"Sin"},	
+	{0x070C,"Cos"},
+	{0x06AA,"Abs"},
+	{0x03D6,"Param$"},
+	{0x0598,"Str$"}
 };
 
 BOOL findSymbol(unsigned short token)
@@ -141,7 +157,7 @@ BOOL findSymbol(unsigned short token)
 	{
 		if (token == ptr->id ) 
 		{
-			if (token != 0x0074)
+			if ((token != 0x0074)&&(token != 0x005C))
 			{
 				if (last_token_is == is_command) printf(" ");
 			}
