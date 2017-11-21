@@ -41,12 +41,49 @@ struct procedure
 	char seed2;
 } __attribute__((packed)) ;
 
+struct rem
+{
+	unsigned short length;
+};
+
 // etch special syntax and commands in AMOS need to be handled with care.
 
 void cmdExtensionCommand(FILE *fd,char *ptr)
 {
 	struct extensionCommand *e = (struct extensionCommand *) ptr;
 	printf("Command_%x_%x ", e->extention_number, e->ExtentionTokenTable);
+}
+
+void cmdRem(FILE *fd, char *ptr)
+{
+	char *buffer;
+	struct rem *Rem = (struct rem *) ptr;
+	int length2 = Rem -> length + (Rem -> length & 1);
+
+	buffer = (char *) malloc(length2+1);
+	if (buffer)
+	{
+		fread(buffer, length2, 1, fd);
+		buffer[ Rem -> length ] = 0;
+		printf("Rem %s",buffer);
+		free(buffer);
+	}
+}
+
+void cmdRem2(FILE *fd, char *ptr)
+{
+	char *buffer;
+	struct rem *Rem = (struct rem *) ptr;
+	int length2 = Rem -> length + (Rem -> length & 1);
+
+	buffer = (char *) malloc(length2+1);
+	if (buffer)
+	{
+		fread(buffer, length2, 1, fd);
+		buffer[ Rem -> length ] = 0;
+		printf("' %s",buffer);
+		free(buffer);
+	}
 }
 
 void cmdCallProcedure(FILE *fd, char *ptr)
@@ -215,6 +252,8 @@ struct callTable CallTable[] =
 	{0x000C, is_newline,	sizeof(struct reference),cmdLabelOnLine},		// label on line
 	{0x0018, is_var,		sizeof(struct reference),cmdLabel},		// ref
 	{0x0376, is_newline,	sizeof(struct procedure),cmdProcedure},
+	{0x064A, is_newline,	sizeof(struct rem),cmdRem},
+	{0x0652, is_newline,	sizeof(struct rem),cmdRem2},
 
 	{0x029E, is_command, 4,cmdExit},
 	{0x023C, is_command, 2,cmdFor},
@@ -224,7 +263,6 @@ struct callTable CallTable[] =
 	{0x02BE, is_command, 2,cmdIf},
 	{0x02D0, is_command, 2,cmdElse},
 	{0x0404, is_command, 2,cmdData},
-
 };
 
 
