@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 #include <proto/exec.h>
 #include "nativeCommands.h"
 #include "startup.h"
@@ -12,7 +13,24 @@ struct AslIFace 		 *IAsl = NULL;
 int token_is = is_newline;
 int last_token_is = is_newline;
 
+int commandCnt = 0;
+int nativeCommandCnt = 0;
+int tokenCnt = 0;
+int symbolCnt = 0;
+
 // structs are used read chunks of the AMOS file, so they need to be packed.
+
+void binrary(unsigned int num)
+{
+	int n;
+
+	for (n=31;n>-1;n--)
+	{
+		printf("%d",num & (1<<n) ? 1 : 0 );
+	}
+	printf("\n");
+
+}
 
 struct tokenStart {
 	char length;
@@ -145,6 +163,33 @@ void cmdInt(FILE *fd,char *ptr)
 	printf("%d", *((int *) ptr));
 }
 
+void cmdFloat(FILE *fd,char *ptr)
+{
+	unsigned int data = *((unsigned int *) ptr);
+	unsigned int number1 = data >> 8;
+	int e = (data & 31) ;
+	if (data & 32) e |= 0xFFFFFF80;
+	int n;
+	double f = 0.0f;
+
+	for (n=23;n>-1;n--)
+	{
+		if ((1<<n)&number1)
+		{
+			f += 1.0f / (double) (1<<(23-n));
+		}
+	}
+
+	if (e>0)	f *= 1 <<e-1;
+	if (e==0)	f /= 2;
+	if (e<0)	f /= 1<<(4-(99+e));
+
+	printf("%f", round( f *1000 ) / 1000.0f  );
+
+//	getchar();
+}
+
+
 void cmdHex(FILE *fd,char *ptr)
 {
 	printf("$%08x", *((int *) ptr));
@@ -246,6 +291,7 @@ struct callTable CallTable[] =
 	{0x002E, is_string,		2,			cmdSingelQuotes},
 	{0x0036, is_number,	sizeof(int),	cmdHex},
 	{0x003E, is_number,	sizeof(int),	cmdInt},
+	{0x0046, is_number,	sizeof(int),	cmdFloat},
 	{0x004E, is_command,	sizeof(struct extensionCommand),cmdExtensionCommand},
 	{0x0006, is_var,		sizeof(struct reference),cmdVar},
 	{0x0012, is_procedure, 	sizeof(struct reference),cmdCallProcedure},
@@ -265,12 +311,20 @@ struct callTable CallTable[] =
 	{0x0404, is_command, 2,cmdData},
 };
 
-
-BOOL token_reader( FILE *fd, unsigned token )
+BOOL token_reader( FILE *fd, unsigned int token, unsigned int tokenlength )
 {
 	char buffer[1024];
 	struct callTable *ptr;
 	int size;
+
+	if (token == 0)
+	{
+		if ( (ftell(fd)-20) == tokenlength ) 
+		{
+			printf("\n");
+			return FALSE;
+		}
+	}
 
 	size = sizeof(CallTable)/sizeof(struct callTable);
 
@@ -278,17 +332,23 @@ BOOL token_reader( FILE *fd, unsigned token )
 	{
 		if (token == ptr->id ) 
 		{
+			commandCnt++;
+
 			if (last_token_is == is_command) printf(" ");	// allways a space after commands?
 
 			token_is = ptr -> type;
+
 			fread(buffer, ptr->size, 1, fd);
+
 			if (ptr->fn) ptr->fn( fd, buffer );
+
 			return TRUE;
 		} 
 	}
 
 	if (findSymbol(token))
 	{
+		tokenCnt++;
 		token_is = is_symbol;
 		return TRUE;
 	}
@@ -297,6 +357,7 @@ BOOL token_reader( FILE *fd, unsigned token )
 
 	if (findNativeCommand(token))
 	{
+		nativeCommandCnt++;
 		token_is = is_command;
 		return TRUE;
 	}
@@ -313,10 +374,10 @@ void code_reader( FILE *fd, unsigned int  tokenlength)
 	struct tokenStart TokenStart;
 	unsigned short TokenNumber;
 
-	token_reader(fd, 0 );	// new line
+	token_reader(fd, 0 , tokenlength);	// new line
 
 	fread( &TokenNumber, 2, 1, fd );
-	while (token_reader( fd, TokenNumber ))
+	while (token_reader( fd, TokenNumber, tokenlength ))
 	{
 		last_token_is = token_is;
 		fread( &TokenNumber, 2, 1, fd );	// next;
@@ -334,7 +395,6 @@ void closedown()
 	if (IAsl) DropInterface((struct Interface*) IAsl); IAsl = 0;
 	if (AslBase) CloseLibrary(AslBase); AslBase = 0;
 }
-
 
 int main( int args, char **arg )
 {
@@ -359,17 +419,14 @@ int main( int args, char **arg )
 			{
 				fread( amosid, 16, 1, fd );
 				fread( &tokenlength, 4, 1, fd );
-
-				printf( "%s, %d\n", amosid, tokenlength );
-
 				code_reader( fd, tokenlength );
-
 				fclose(fd);
 			}
 			free(filename);
 		}
 		closedown();
 	}
+
 
 	return 0;
 }
