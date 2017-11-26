@@ -17,6 +17,7 @@ int commandCnt = 0;
 int nativeCommandCnt = 0;
 int tokenCnt = 0;
 int symbolCnt = 0;
+int linenumber = 0;
 
 // structs are used read chunks of the AMOS file, so they need to be packed.
 
@@ -156,6 +157,9 @@ void cmdVar(FILE *fd, char *ptr)
 
 	buffer[ ref -> length ] = 0;
 	printf("%s",buffer);
+	printf("%s",ref->flags & 2 ? "$" : "");
+
+//	getchar();
 }
 
 void cmdInt(FILE *fd,char *ptr)
@@ -247,6 +251,7 @@ void cmdNewLine(FILE *fd,char *ptr)
 {
 	int n;
 	struct tokenStart *TokenStart = (struct tokenStart *) ptr;
+	linenumber++;
 	printf("\n");
 	for (n=1;n<TokenStart->level;n++) printf(" ");
 }
@@ -310,6 +315,7 @@ struct callTable CallTable[] =
 	{0x0376, is_newline,	sizeof(struct procedure),cmdProcedure},
 	{0x064A, is_newline,	sizeof(struct rem),cmdRem},
 	{0x0652, is_newline,	sizeof(struct rem),cmdRem2},
+	{0x3D45, is_newline,	sizeof(struct rem),cmdRem2},
 
 	{0x029E, is_command, 4,cmdExit},
 	{0x023C, is_command, 2,cmdFor},
@@ -375,7 +381,7 @@ BOOL token_reader( FILE *fd, unsigned int token, unsigned int tokenlength )
 	}
 	else
 	{
-		printf("\n\nERROR: File pos %08X -- Token %04X not found\n\n",  ftell(fd), token );
+		printf("\n\nERROR: Line %d, File pos %08X -- Token %04X not found\n\n",linenumber, ftell(fd), token );
 	}
 
 	return FALSE;
@@ -426,6 +432,8 @@ int main( int args, char **arg )
 
 		if (filename)
 		{
+			printf("FILE: %s\n", filename);
+
 			fd = fopen(filename,"r");
 			if (fd)
 			{
@@ -438,7 +446,6 @@ int main( int args, char **arg )
 		}
 		closedown();
 	}
-
 
 	return 0;
 }
