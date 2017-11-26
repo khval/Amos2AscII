@@ -168,7 +168,7 @@ void cmdFloat(FILE *fd,char *ptr)
 	unsigned int data = *((unsigned int *) ptr);
 	unsigned int number1 = data >> 8;
 	int e = (data & 31) ;
-	if (data & 32) e |= 0xFFFFFF80;
+	if (data & 32) e |= 0xFFFFFFE0;
 	int n;
 	double f = 0.0f;
 
@@ -182,11 +182,9 @@ void cmdFloat(FILE *fd,char *ptr)
 
 	if (e>0)	f *= 1 <<e-1;
 	if (e==0)	f /= 2;
-	if (e<0)	f /= 1<<(4-(99+e));
+	if (e<0)	f /= 1<<(-e+1);
 
 	printf("%f", round( f *1000 ) / 1000.0f  );
-
-//	getchar();
 }
 
 
@@ -230,6 +228,16 @@ void cmdElse(FILE *fd,char *ptr)
 	printf("Else");
 }
 
+void cmdElseIf(FILE *fd,char *ptr)
+{
+	printf("Else If");
+}
+
+void cmdExitIf(FILE *fd,char *ptr)
+{
+	printf("Exit If");
+}
+
 void cmdData(FILE *fd,char *ptr)
 {
 	printf("Data");
@@ -237,8 +245,10 @@ void cmdData(FILE *fd,char *ptr)
 
 void cmdNewLine(FILE *fd,char *ptr)
 {
+	int n;
 	struct tokenStart *TokenStart = (struct tokenStart *) ptr;
 	printf("\n");
+	for (n=1;n<TokenStart->level;n++) printf(" ");
 }
 
 void cmdDoubleQuotes(FILE *fd,char *ptr)
@@ -309,6 +319,8 @@ struct callTable CallTable[] =
 	{0x02BE, is_command, 2,cmdIf},
 	{0x02D0, is_command, 2,cmdElse},
 	{0x0404, is_command, 2,cmdData},
+	{0x25A4, is_command, 2,cmdElseIf},
+	{0x0290, is_command, 4,cmdExitIf}
 };
 
 BOOL token_reader( FILE *fd, unsigned int token, unsigned int tokenlength )
