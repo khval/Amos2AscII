@@ -156,6 +156,7 @@ struct nativeCommand NativeCommand[]=
 	{0x1262,"Scancode"},
 	{0x1290,"Wait Key"},
 	{0x129E,"Wait "},
+	{0x12CE,"Timer"},
 	{0x1378,"Locate "},
 	{0x13D2,"Pen"},
 	{0x13DC,"Paper"},
@@ -189,6 +190,7 @@ struct nativeCommand NativeCommand[]=
 	{0x1930,"Kill"},
 	{0x1948,"Field"},
 	{0x1954,"Fsel$"},
+	{0x196C,"Fsel$"},
 	{0x1978,"Fsel$"},
 	{0x1986,"Set Sprite Buffer"},
 	{0x1A72,"Sprite Base"},
@@ -203,9 +205,9 @@ struct nativeCommand NativeCommand[]=
 	{0x1E32,"Mouse Key"},
 	{0x1e6e,"Limit Mouse"},
 	{0x1F94,"Channel"},
-	{0x1FBC,"Amal on"},
+	{0x1FBC,"Amal On"},
 	{0x1FCA,"Amal On"},
-	{0x1FE2,"Amal off"},
+	{0x1FE2,"Amal Off"},
 	{0x2012,"Amal"},
 	{0x20BA,"X Bob"},
 	{0x20C6,"Y Bob"},
@@ -219,6 +221,8 @@ struct nativeCommand NativeCommand[]=
 	{0x21CA,"Poke"},
 	{0x21E6,"Peek"},
 	{0x21F2,"Deek"},
+	{0x21FE,"Leek"},
+	{0x2234,"Btst"},
 	{0x22A2,"Dreg"},
 	{0x23AC,"Put"},
 	{0x23D0,"Multi Wait"},
@@ -250,7 +254,8 @@ struct nativeCommand NativeCommand[]=
 	{0x2B72,"Kill Editor"},
 	{0x4FE,"Set Buffers"},
 	{0xFF4C,"or"},
-	{0xFF58," and"}
+	{0xFF58," and"},
+
 };
 
 BOOL findSymbol(unsigned short token)
