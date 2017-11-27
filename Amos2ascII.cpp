@@ -150,6 +150,7 @@ void cmdProcedure(FILE *fd, char *ptr)
 void cmdVar(FILE *fd, char *ptr)
 {
 	char buffer[100];
+	const char *type[]={"","#","$","?"};
 	struct reference *ref = (struct reference *) ptr;
 
 	memset(buffer,'*', 50 );
@@ -157,7 +158,7 @@ void cmdVar(FILE *fd, char *ptr)
 
 	buffer[ ref -> length ] = 0;
 	printf("%s",buffer);
-	printf("%s",ref->flags & 2 ? "$" : "");
+	printf( "%s",type[ref->flags&3] );
 
 //	getchar();
 }
