@@ -32,11 +32,11 @@ struct nativeCommand Symbol[]=
 
 struct nativeCommand NativeCommand[]=
 {
-	{0x0054," :"},
 	{0x0094," To"},
 	{0x009C,"Not"},
 	{0x00B0,"Def Fn"},
 	{0x00BC," Fn"},
+	{0x00E0,"Resume Next"},
 	{0x00F2,"Inkey$"},
 	{0x012C,"Double Buffer"},
 	{0x0140,"Start"},
@@ -48,10 +48,9 @@ struct nativeCommand NativeCommand[]=
 	{0x01F8,"Execall"},
 	{0x0214,"Doscall"},
 	{0x0246,"Next"},
-	{0x0286,"Loop "},
+	{0x0286,"Loop"},
 	{0x02A8,"Goto "},
 	{0x02B2,"Gosub "},
-	{0x02C6," then "},
 	{0x02DA,"End if"},
 	{0x02E6,"On Error"},
 	{0x031E,"Resume Label"},
@@ -71,7 +70,7 @@ struct nativeCommand NativeCommand[]=
 	{0x0458,"Add"},
 	{0x0462,"Add"},
 	{0x046A,"Print"},		// Print to file
-	{0x0476,"Print "},
+	{0x0476,"Print"},
 	{0x049C,"Input$"},
 	{0x04B2,"Input"},
 	{0x04BE,"Line Input"},
@@ -118,6 +117,7 @@ struct nativeCommand NativeCommand[]=
 	{0x0B90,"Get Palette"},
 	{0x0BAE,"Cls"},
 	{0x0BB8,"Cls"},
+	{0x0BC0,"Cls"},	// CLS color,x,y to x,y
 	{0x0BD0,"Def Scroll"},
 	{0x0C1E,"X Screen"},
 	{0x0c38,"Y Screen"},
@@ -140,13 +140,16 @@ struct nativeCommand NativeCommand[]=
 	{0x0EBA,"Polygon"},
 	{0x0EC8,"Bar"},
 	{0x0ED8,"Box"},
+	{0x0EE8,"Paint"},
 	{0x0F16,"Text Length"},
 	{0x0F4A,"Text"},
 	{0x0F8A,"Get Disc Fonts"},
 	{0x0FB2,"Set Font"},
+	{0x04FE,"Set Buffers"},
 	{0x0FC2,"Font$"},
 	{0x1044,"Ink"},
 	{0x1050,"Ink"},
+	{0x1066,"Gr Writing"},
 	{0x10D6,"Zoom"},
 	{0x11D8,"Key State"},
 	{0x1218,"Jleft"},
@@ -155,9 +158,9 @@ struct nativeCommand NativeCommand[]=
 	{0x1248,"False"},
 	{0x1262,"Scancode"},
 	{0x1290,"Wait Key"},
-	{0x129E,"Wait "},
+	{0x129E,"Wait"},
 	{0x12CE,"Timer"},
-	{0x1378,"Locate "},
+	{0x1378,"Locate"},
 	{0x13D2,"Pen"},
 	{0x13DC,"Paper"},
 	{0x13E8,"Centre"},
@@ -195,11 +198,16 @@ struct nativeCommand NativeCommand[]=
 	{0x1986,"Set Sprite Buffer"},
 	{0x1A72,"Sprite Base"},
 	{0x1B9E,"Bob"},
+	{0x1BAE,"Get Sprite Palette"},
+	{0x1C14,"Get Bob"},
+	{0x1C42,"Del Bob"},
+	{0x1C88,"Ins Bob"},
 	{0x1CFE,"Paste Bob"},
 	{0x1DD2,"Hide On"},
 	{0x1DE0,"Hide"},
 	{0x1DEA,"Show On"},
 	{0x1DF8,"Show"},
+	{0x1E02,"Change Mouse"},
 	{0x1E16,"X Mouse"},
 	{0x1E24,"Y Mouse"},
 	{0x1E32,"Mouse Key"},
@@ -233,7 +241,7 @@ struct nativeCommand NativeCommand[]=
 	{0x2520,"Laced"},
 	{0x253C,"Command Line$"},
 	{0x2578,"Set Accessory"},
-	{0x259A,"Trap "},
+	{0x259A,"Trap"},
 	{0x2720,"Dialog Open"},
 	{0x2764,"Dialog Close"},
 	{0x277E,"Dialog Run"},
@@ -250,12 +258,18 @@ struct nativeCommand NativeCommand[]=
 	{0x28DE,"Resource$"},
 	{0x2962,"Errtrap"},
 	{0x2AB0,"Prg Under"},
+	{0x2BAE,"Get Bob Palette"},
+	{0x2B3E,"Exec"},
 	{0x2B58,"Screen Mode"},
 	{0x2B72,"Kill Editor"},
-	{0x4FE,"Set Buffers"},
-	{0xFF4C,"or"},
+	{0xFF4C," or"},
 	{0xFF58," and"},
-
+	{0x0E24,"Physic"},
+	{0x01D4,"Logic"},
+	{0x1DA2,"Hot Spot"},
+	{0x1844,"Save"},
+	{0x0528,"Left$"},
+	{0x03FA,"Errn"}
 };
 
 BOOL findSymbol(unsigned short token)
@@ -267,10 +281,10 @@ BOOL findSymbol(unsigned short token)
 	{
 		if (token == ptr->id ) 
 		{
-			if ((token != 0x0074)&&(token != 0x005C))
-			{
-				if (last_token_is == is_command) printf(" ");
-			}
+			if ((token == 0xFFCA)&&(space_after ==' ')) printf(" ");
+
+			if (token == 0xFFA2) equal_symbol = TRUE;
+			space_after = 0;
 
 			printf("%s", ptr -> name);
 			return TRUE;
@@ -278,6 +292,8 @@ BOOL findSymbol(unsigned short token)
 	}
 	return FALSE;
 }
+
+
 
 BOOL findNativeCommand(unsigned short token)
 {
@@ -288,7 +304,14 @@ BOOL findNativeCommand(unsigned short token)
 	{
 		if (token == ptr->id ) 
 		{
+			if (space_after ==' ') printf(" ");
+			space_after = 0;
+
 			printf("%s", ptr -> name);
+			space_after=' ';
+
+			equal_symbol = FALSE;
+
 			return TRUE;
 		}
 	}

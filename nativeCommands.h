@@ -5,7 +5,9 @@ struct nativeCommand
 	const char *name;
 };
 
+extern BOOL equal_symbol;
 extern struct nativeCommand NativeCommand[];
 extern BOOL findNativeCommand(unsigned short token);
-BOOL findSymbol(unsigned short token);
+extern BOOL findSymbol(unsigned short token);
+extern int commandCnt;
 
