@@ -10,8 +10,10 @@ enum
 	is_string,
 	is_var,
 	is_procedure,
+	is_commandDivider
 };
 
 extern int token_is ;
 extern int last_token_is ;
+extern char space_after;
 
