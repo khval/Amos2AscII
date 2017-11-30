@@ -18,6 +18,8 @@ int tokenCnt = 0;
 int symbolCnt = 0;
 int linenumber = 0;
 
+char *filename = NULL;
+
 BOOL equal_symbol = FALSE;
 
 char space_after = 0;
@@ -214,7 +216,7 @@ void cmdHex(FILE *fd,char *ptr)
 
 void cmdFor (FILE *fd,char *ptr)
 {
-	printf("For");
+	printf("For ");
 }
 
 void cmdRepeat(FILE *fd,char *ptr)
@@ -225,6 +227,11 @@ void cmdRepeat(FILE *fd,char *ptr)
 void cmdWhile(FILE *fd,char *ptr)
 {
 	printf("While");
+}
+
+void cmdUntil(FILE *fd,char *ptr)
+{
+	printf("Until");
 }
 
 void cmdDo(FILE *fd,char *ptr)
@@ -361,6 +368,7 @@ struct callTable CallTable[] =
 	{0x023C, is_command, 2,cmdFor},
 	{0x0250, is_command, 2,cmdRepeat},
 	{0x0268, is_command, 2,cmdWhile},
+	{0x025C, is_command, 2,cmdUntil},
 	{0x027E, is_command, 2,cmdDo},
 	{0x02BE, is_command, 2,cmdIf},
 	{0x02D0, is_command, 2,cmdElse},
@@ -424,6 +432,7 @@ BOOL token_reader( FILE *fd, unsigned int token, unsigned int tokenlength )
 	else
 	{
 		printf("\n\nERROR: Line %d, File pos %08X -- Token %04X not found\n\n",linenumber, ftell(fd), token );
+		printf("FILE: %s\n", filename);
 	}
 
 	return FALSE;
@@ -461,7 +470,6 @@ int main( int args, char **arg )
 	FILE *fd;
 	char amosid[17];
 	unsigned int tokenlength;
-	char *filename = NULL;
 
 	amosid[16] = 0;	// /0 string.
 
@@ -474,8 +482,6 @@ int main( int args, char **arg )
 
 		if (filename)
 		{
-			printf("FILE: %s\n", filename);
-
 			fd = fopen(filename,"r");
 			if (fd)
 			{
