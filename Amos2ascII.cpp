@@ -214,24 +214,9 @@ void cmdHex(FILE *fd,char *ptr)
 	printf("$%08x", *((int *) ptr));
 }
 
-void cmdFor (FILE *fd,char *ptr)
-{
-	printf("For ");
-}
-
 void cmdRepeat(FILE *fd,char *ptr)
 {
 	printf("Repeat");
-}
-
-void cmdWhile(FILE *fd,char *ptr)
-{
-	printf("While");
-}
-
-void cmdUntil(FILE *fd,char *ptr)
-{
-	printf("Until");
 }
 
 void cmdDo(FILE *fd,char *ptr)
@@ -239,10 +224,41 @@ void cmdDo(FILE *fd,char *ptr)
 	printf("Do");
 }
 
+void cmdFor (FILE *fd,char *ptr)
+{
+	commandCnt = 0;
+	space_after = 0;
+	printf("For ");
+}
+
+void cmdWhile(FILE *fd,char *ptr)
+{
+	commandCnt = 0;
+	space_after = 0;
+	printf("While ");
+}
+
+void cmdUntil(FILE *fd,char *ptr)
+{
+	commandCnt = 0;
+	space_after = 0;
+	printf("Until ");
+}
+
 void cmdIf(FILE *fd,char *ptr)
 {
+	commandCnt = 0;
+	space_after = 0;
 	printf("If ");
 }
+
+void cmdOn(FILE *fd,char *ptr)
+{
+	commandCnt = 0;
+	space_after = 0;
+	printf("On ");
+}
+
 
 void cmdExit(FILE *fd,char *ptr)
 {
@@ -263,7 +279,9 @@ void cmdThen(FILE *fd,char *ptr)
 
 void cmdElseIf(FILE *fd,char *ptr)
 {
-	printf("Else If");
+	commandCnt = 0;
+	space_after = 0;
+	printf("Else If ");
 }
 
 void cmdExitIf(FILE *fd,char *ptr)
@@ -368,9 +386,10 @@ struct callTable CallTable[] =
 	{0x023C, is_command, 2,cmdFor},
 	{0x0250, is_command, 2,cmdRepeat},
 	{0x0268, is_command, 2,cmdWhile},
-	{0x025C, is_command, 2,cmdUntil},
+	{0x025C, is_command, 0,cmdUntil},
 	{0x027E, is_command, 2,cmdDo},
 	{0x02BE, is_command, 2,cmdIf},
+	{0x0316, is_command, 4,cmdOn},		// not unlike IF
 	{0x02D0, is_command, 2,cmdElse},
 	{0x0404, is_command, 2,cmdData},
 	{0x25A4, is_command, 2,cmdElseIf},
@@ -431,8 +450,8 @@ BOOL token_reader( FILE *fd, unsigned int token, unsigned int tokenlength )
 	}
 	else
 	{
-		printf("\n\nERROR: Line %d, File pos %08X -- Token %04X not found\n\n",linenumber, ftell(fd), token );
-		printf("FILE: %s\n", filename);
+		printf("\n\nERROR: Line %d, File pos %08X -- Token %04X not found\n",linenumber, ftell(fd), token );
+		printf("FILE: %s\n\n", filename);
 	}
 
 	return FALSE;
