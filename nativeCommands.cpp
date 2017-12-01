@@ -32,7 +32,7 @@ struct nativeCommand Symbol[]=
 
 struct nativeCommand NativeCommand[]=
 {
-	{0x0094," To"},
+	{0x0094,"To"},
 	{0x009C,"Not"},
 	{0x00B0,"Def Fn"},
 	{0x00BC," Fn"},
@@ -45,9 +45,11 @@ struct nativeCommand NativeCommand[]=
 	{0x01BA,"Logbase"},
 	{0x01DC,"Asc"},
 	{0x01E6," As"},
+	{0x01EE,"Call"},
 	{0x01F8,"Execall"},
 	{0x0214,"Doscall"},
 	{0x0246,"Next"},
+	{0x0274,"Wend"},
 	{0x0286,"Loop"},
 	{0x02A8,"Goto "},
 	{0x02B2,"Gosub "},
@@ -76,8 +78,10 @@ struct nativeCommand NativeCommand[]=
 	{0x04B2,"Input"},
 	{0x04BE,"Line Input"},
 	{0x04D0,"Input"},
+	{0x04F6,"Run"},
 	{0x04FE,"Set Buffers"},
-	{0x050E,"Mid$"},
+	{0x050E,"Mid$"},	// Mid$(txt,start,len)
+	{0x051E,"Mid$"},	// Mid$(txt,start)
 	{0x0536,"Right$"},
 	{0x0552,"Chr$"},
 	{0x055E,"Space$"},
@@ -140,6 +144,7 @@ struct nativeCommand NativeCommand[]=
 	{0x0E3C,"Plot"},
 	{0x0E4A,"Plot"},
 	{0x0E56,"Point"},
+	{0x0E74,"Draw"},
 	{0x0EAC,"Polyline"},
 	{0x0EBA,"Polygon"},
 	{0x0EC8,"Bar"},
@@ -155,6 +160,7 @@ struct nativeCommand NativeCommand[]=
 	{0x1050,"Ink"},
 	{0x1066,"Gr Writing"},
 	{0x10D6,"Zoom"},
+	{0x11BE,"Del Block"},
 	{0x11C6,"Key Speed"},
 	{0x11D8,"Key State"},
 	{0x1218,"Jleft"},
@@ -165,7 +171,9 @@ struct nativeCommand NativeCommand[]=
 	{0x1290,"Wait Key"},
 	{0x129E,"Wait"},
 	{0x12CE,"Timer"},
+	{0x12DA,"Wind Open"},
 	{0x1378,"Locate"},
+	{0x13C6,"At"},
 	{0x13D2,"Pen"},
 	{0x13DC,"Paper"},
 	{0x13E8,"Centre"},
@@ -174,6 +182,7 @@ struct nativeCommand NativeCommand[]=
 	{0x15F2,"Y Curs"},
 	{0x1646,"Reserve Zone"},
 	{0x1668,"Set Zone"},
+	{0x168E,"Zone"},
 	{0x16B6,"Scin"},
 	{0x16E2,"Mouse Zone"},
 	{0x16F2,"Set Input"},
@@ -219,7 +228,8 @@ struct nativeCommand NativeCommand[]=
 	{0x1E16,"X Mouse"},
 	{0x1E24,"Y Mouse"},
 	{0x1E32,"Mouse Key"},
-	{0x1e6e,"Limit Mouse"},
+	{0x1E54,"Limit Mouse"},		// no args
+	{0x1E6E,"Limit Mouse"},
 	{0x1F94,"Channel"},
 	{0x1FBC,"Amal On"},
 	{0x1FCA,"Amal On"},
@@ -233,6 +243,7 @@ struct nativeCommand NativeCommand[]=
 	{0x216A,"List Bank"},
 	{0x217A,"Chip Free"},
 	{0x218A,"Fast Free"},
+	{0x219A,"Fill"},
 	{0x21AA,"Copy"},
 	{0x21CA,"Poke"},
 	{0x21D8,"Loke"},
@@ -241,6 +252,7 @@ struct nativeCommand NativeCommand[]=
 	{0x21FE,"Leek"},
 	{0x2226,"Bchg"},
 	{0x2234,"Btst"},
+	{0x2296,"Areg"},
 	{0x22A2,"Dreg"},
 	{0x23AC,"Put"},
 	{0x23B8,"Get"},
@@ -251,10 +263,12 @@ struct nativeCommand NativeCommand[]=
 	{0x2498,"Bank Swap"},
 	{0x24AA,"Amos To Front"},
 	{0x24BE,"Amos To Back "},
+	{0x2516,"Ntsc"},
 	{0x2520,"Laced"},
 	{0x253C,"Command Line$"},
 	{0x2578,"Set Accessory"},
 	{0x259A,"Trap"},
+	{0x2704,"Dialog Box"},
 	{0x2720,"Dialog Open"},
 	{0x2764,"Dialog Close"},
 	{0x277E,"Dialog Run"},
@@ -284,7 +298,6 @@ struct nativeCommand NativeCommand[]=
 	{0x0528,"Left$"},
 	{0x03FA,"Errn"},
 	{0x1DAE,"Priority On"},
-
 };
 
 BOOL findSymbol(unsigned short token)
@@ -319,6 +332,8 @@ BOOL findNativeCommand(unsigned short token)
 	{
 		if (token == ptr->id ) 
 		{
+			if ((last_token_is==is_var)||(last_token_is==is_number)) printf(" ");
+
 			if (space_after ==' ') printf(" ");
 			space_after = 0;
 
