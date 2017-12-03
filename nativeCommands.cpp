@@ -34,10 +34,13 @@ struct nativeCommand NativeCommand[]=
 {
 	{0x0094,"To"},
 	{0x009C,"Not"},
+	{0x00A6,"Swap"},
 	{0x00B0,"Def Fn"},
 	{0x00BC," Fn"},
 	{0x00E0,"Resume Next"},
 	{0x00F2,"Inkey$"},
+	{0x010E,"Zone$"},
+	{0x011C,"Border$"},
 	{0x012C,"Double Buffer"},
 	{0x0140,"Start"},
 	{0x014C,"Length"},
@@ -78,6 +81,7 @@ struct nativeCommand NativeCommand[]=
 	{0x0462,"Add"},
 	{0x046A,"Print"},		// Print to file
 	{0x0476,"Print"},
+	{0x0482,"Lprint"},
 	{0x049C,"Input$"},
 	{0x04B2,"Input"},
 	{0x04BE,"Line Input"},
@@ -96,6 +100,7 @@ struct nativeCommand NativeCommand[]=
 	{0x0598,"Str$"},
 	{0x05A4,"Val"},
 	{0x05AE,"Bin$"},
+	{0x05D0,"Hex$"},
 	{0x05DA,"Len"},
 	{0x05E4,"Instr"},	// Instr(str,str)
 	{0x05F4,"Instr"},	// Instr(str,str,n)
@@ -112,6 +117,10 @@ struct nativeCommand NativeCommand[]=
 	{0x072C,"Acos"},
 	{0x07B8,"Menu On"},
 	{0x07C6,"Menu Off"},
+	{0x084E,"Menu Key"},
+	{0x08FC,"Menu Inactive"},
+	{0x0956,"Menu Del"},
+	{0x0964,"Menu$"},
 	{0x0970,"Choice"},
 	{0x097E,"Choice"},		// Choice(1)
 	{0x0986,"Screen Copy"},
@@ -142,6 +151,7 @@ struct nativeCommand NativeCommand[]=
 	{0x0C84,"Hires"},
 	{0x0C90,"Lowres"},
 	{0x0C9C,"Dual Playfield"},
+	{0x0CB4,"Dual Priority"},
 	{0x0CCA,"Wait Vbl"},
 	{0x0CD8,"Default Palette"},
 	{0x0CFC,"Palette"},
@@ -196,13 +206,17 @@ struct nativeCommand NativeCommand[]=
 	{0x13DC,"Paper"},
 	{0x13E8,"Centre"},
 	{0x1446,"Curs Off"},
+	{0x1454,"Curs On"},
 	{0x1462,"Inverse Off"},
 	{0x1474,"Inverse On"},
+	{0x158A,"Cline"},
 	{0x14C0,"Scroll Off"},
 	{0x14E0,"Scroll"},
+	{0x157C,"Cmove"},
 	{0x15AC,"Vscroll"},
 	{0x15F2,"Y Curs"},
 	{0x1646,"Reserve Zone"},
+	{0x1660,"Reset Zone"},
 	{0x1668,"Set Zone"},
 	{0x168E,"Zone"},
 	{0x16B6,"Scin"},
@@ -237,6 +251,7 @@ struct nativeCommand NativeCommand[]=
 	{0x1978,"Fsel$"},
 	{0x1986,"Set Sprite Buffer"},
 	{0x199E,"Sprite Off"},
+	{0x1AA8,"Bob Off"},
 	{0x1A72,"Sprite Base"},
 	{0x1B9E,"Bob"},
 	{0x1BAE,"Get Sprite Palette"},
@@ -257,14 +272,24 @@ struct nativeCommand NativeCommand[]=
 	{0x1E54,"Limit Mouse"},		// no args
 	{0x1E6E,"Limit Mouse"},
 	{0x1F94,"Channel"},
-	{0x1FBC,"Amal On"},
+	{0x1FA2,"Amreg"},		// Amreg(a)
+	{0x1FB0,"Amreg"},		// Amreg(a,b)
+	{0x1FBC,"Amal On"},	
 	{0x1FCA,"Amal On"},
+	{0x1FD2,"Amal Off"},	// no args
 	{0x1FE2,"Amal Off"},
+	{0x2004,"Amalerr"},
 	{0x2012,"Amal"},
+	{0x2020,"Amal"},	// Amal num,str to num
+	{0x204A,"Synchro On"},
+	{0x205A,"Synchro Off"},
+	{0x206C,"Synchro"},
+	{0x20AE,"Update"},
 	{0x20BA,"X Bob"},
 	{0x20C6,"Y Bob"},
 	{0x20F2,"Reserve As Work"},
 	{0x210A,"Reserve As Chip Work"},
+	{0x2128,"Reserve As Data"},
 	{0x215E,"Erase"},
 	{0x216A,"List Bank"},
 	{0x217A,"Chip Free"},
@@ -276,12 +301,15 @@ struct nativeCommand NativeCommand[]=
 	{0x21E6,"Peek"},
 	{0x21F2,"Deek"},
 	{0x21FE,"Leek"},
+	{0x220A,"Bset"},
+	{0x2218,"Bclr"},
 	{0x2226,"Bchg"},
 	{0x2234,"Btst"},
 	{0x2296,"Areg"},
 	{0x22A2,"Dreg"},
 	{0x23AC,"Put"},
 	{0x23B8,"Get"},
+	{0x23C4,"System"},
 	{0x23D0,"Multi Wait"},
 	{0x23E0,"I Bob"},
 	{0x2430,"Dev First$"},
@@ -318,7 +346,6 @@ struct nativeCommand NativeCommand[]=
 	{0xFF4C,"or"},
 	{0xFF58,"and"},
 	{0xFFD4,"mod"}
-
 };
 
 BOOL findSymbol(unsigned short token)
@@ -355,6 +382,7 @@ BOOL findNativeCommand(unsigned short lastToken, unsigned short token)
 		{
 			if (
 				(last_token_is==is_var)||
+				(last_token_is==is_label)||
 				(last_token_is==is_string)||
 				(last_token_is==is_number)||
 				(lastToken == 0x007C)				// symbol ")"

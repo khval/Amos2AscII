@@ -8,6 +8,7 @@ enum
 	is_symbol,
 	is_number,
 	is_string,
+	is_label,
 	is_var,
 	is_procedure,
 	is_commandDivider

@@ -313,6 +313,8 @@ void cmdExitIf(FILE *fd,char *ptr)
 
 void cmdData(FILE *fd,char *ptr)
 {
+	space_after = ' ';
+	commandCnt = 0;
 	printf("Data");
 }
 
@@ -388,7 +390,7 @@ struct callTable CallTable[] =
 {
 	{0x0000,	is_newline,	2,			cmdNewLine},
 	{0x0006, is_var,		sizeof(struct reference),cmdVar},
-	{0x000C, is_newline,	sizeof(struct reference),cmdLabelOnLine},		// label on line
+	{0x000C, is_label,	sizeof(struct reference),cmdLabelOnLine},		// label on line
 	{0x0012, is_procedure, 	sizeof(struct reference),cmdCallProcedure},
 	{0x0018, is_var,		sizeof(struct reference),cmdLabel},		// ref
 	{0x001E, is_number,	sizeof(int),	cmdBin},
@@ -447,6 +449,7 @@ BOOL token_reader( FILE *fd, unsigned short lastToken, unsigned short token, uns
 
 			if (
 				(last_token_is==is_var)||
+				(last_token_is==is_label)||
 				(last_token_is==is_string)||
 				(last_token_is==is_number)||
 				(lastToken == 0x007C)				// symbol ")"
