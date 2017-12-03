@@ -43,6 +43,7 @@ struct nativeCommand NativeCommand[]=
 	{0x014C,"Length"},
 	{0x015A,"Doke"},
 	{0x01BA,"Logbase"},
+	{0x01D4,"Logic"},
 	{0x01DC,"Asc"},
 	{0x01E6," As"},
 	{0x01EE,"Call"},
@@ -59,17 +60,20 @@ struct nativeCommand NativeCommand[]=
 	{0x0330,"Resume"},
 	{0x033C,"Pop Proc"},
 	{0x0356," Step"},
-	{0x0360,"Return" },
+	{0x0360,"Return"},
+	{0x036C,"Pop"},
 	{0x0386,"Proc"},
 	{0x0390,"End Proc"},
 	{0x039E,"Shared"},
 	{0x03AA,"Global"},
 	{0x03D6,"Param$"},
 	{0x03E2,"Param"},
+	{0x03FA,"Errn"},
 	{0x040E,"Read"},
 	{0x0418,"Restore"},
 	{0x0426,"Break Off"},
 	{0x0444,"Inc"},
+	{0X044E,"Dec"},
 	{0x0458,"Add"},
 	{0x0462,"Add"},
 	{0x046A,"Print"},		// Print to file
@@ -82,6 +86,7 @@ struct nativeCommand NativeCommand[]=
 	{0x04FE,"Set Buffers"},
 	{0x050E,"Mid$"},	// Mid$(txt,start,len)
 	{0x051E,"Mid$"},	// Mid$(txt,start)
+	{0x0528,"Left$"},
 	{0x0536,"Right$"},
 	{0x0552,"Chr$"},
 	{0x055E,"Space$"},
@@ -92,7 +97,8 @@ struct nativeCommand NativeCommand[]=
 	{0x05A4,"Val"},
 	{0x05AE,"Bin$"},
 	{0x05DA,"Len"},
-	{0x05E4,"Instr"},
+	{0x05E4,"Instr"},	// Instr(str,str)
+	{0x05F4,"Instr"},	// Instr(str,str,n)
 	{0x060A,"Free"},
 	{0x0614,"Varptr"},
 	{0x0640,"Dim"},
@@ -104,6 +110,10 @@ struct nativeCommand NativeCommand[]=
 	{0x0702,"Sin"},	
 	{0x070C,"Cos"},
 	{0x072C,"Acos"},
+	{0x07B8,"Menu On"},
+	{0x07C6,"Menu Off"},
+	{0x0970,"Choice"},
+	{0x097E,"Choice"},		// Choice(1)
 	{0x0986,"Screen Copy"},
 	{0x09A8,"Screen Copy"},
 	{0x09D6,"Screen Clone"},
@@ -140,6 +150,7 @@ struct nativeCommand NativeCommand[]=
 	{0x0D34,"Flash Off"},
 	{0x0D44,"Flash"},
 	{0x0DFE,"Fade"},
+	{0x0E24,"Physic"},
 	{0x0E2C,"Autoback"},
 	{0x0E3C,"Plot"},
 	{0x0E4A,"Plot"},
@@ -153,11 +164,14 @@ struct nativeCommand NativeCommand[]=
 	{0x0F16,"Text Length"},
 	{0x0F3A,"Text Base"},
 	{0x0F4A,"Text"},
+	{0x0F6A,"Set Paint"},
 	{0x0F8A,"Get Disc Fonts"},
 	{0x0FB2,"Set Font"},
 	{0x0FC2,"Font$"},
+	{0x1022,"Set Pattern"},
 	{0x1044,"Ink"},
 	{0x1050,"Ink"},
+	{0x105A,"Ink"},		// Ink 0,0,0
 	{0x1066,"Gr Writing"},
 	{0x10D6,"Zoom"},
 	{0x11BE,"Del Block"},
@@ -167,18 +181,26 @@ struct nativeCommand NativeCommand[]=
 	{0x1224,"Jright"},
 	{0x123E,"True"},
 	{0x1248,"False"},
+	{0x1254,"Put Key"},
 	{0x1262,"Scancode"},
+	{0x1270,"Scanshift"},
+	{0x1280,"Clear Key"},
 	{0x1290,"Wait Key"},
 	{0x129E,"Wait"},
 	{0x12CE,"Timer"},
 	{0x12DA,"Wind Open"},
 	{0x1378,"Locate"},
+	{0x1388,"Clw"},
 	{0x13C6,"At"},
 	{0x13D2,"Pen"},
 	{0x13DC,"Paper"},
 	{0x13E8,"Centre"},
 	{0x1446,"Curs Off"},
+	{0x1462,"Inverse Off"},
+	{0x1474,"Inverse On"},
+	{0x14C0,"Scroll Off"},
 	{0x14E0,"Scroll"},
+	{0x15AC,"Vscroll"},
 	{0x15F2,"Y Curs"},
 	{0x1646,"Reserve Zone"},
 	{0x1668,"Set Zone"},
@@ -196,6 +218,7 @@ struct nativeCommand NativeCommand[]=
 	{0x17E4,"Load Iff"},
 	{0x180C,"Bload"},
 	{0x181A,"Bsave"},
+	{0x1844,"Save"},
 	{0x184E,"Load"},
 	{0x1864,"Dfree"},
 	{0x1870,"Mkdir"},
@@ -213,6 +236,7 @@ struct nativeCommand NativeCommand[]=
 	{0x196C,"Fsel$"},
 	{0x1978,"Fsel$"},
 	{0x1986,"Set Sprite Buffer"},
+	{0x199E,"Sprite Off"},
 	{0x1A72,"Sprite Base"},
 	{0x1B9E,"Bob"},
 	{0x1BAE,"Get Sprite Palette"},
@@ -220,6 +244,8 @@ struct nativeCommand NativeCommand[]=
 	{0x1C42,"Del Bob"},
 	{0x1C88,"Ins Bob"},
 	{0x1CFE,"Paste Bob"},
+	{0x1DA2,"Hot Spot"},
+	{0x1DAE,"Priority On"},
 	{0x1DD2,"Hide On"},
 	{0x1DE0,"Hide"},
 	{0x1DEA,"Show On"},
@@ -289,15 +315,10 @@ struct nativeCommand NativeCommand[]=
 	{0x2B3E,"Exec"},
 	{0x2B58,"Screen Mode"},
 	{0x2B72,"Kill Editor"},
-	{0xFF4C," or"},
-	{0xFF58," and"},
-	{0x0E24,"Physic"},
-	{0x01D4,"Logic"},
-	{0x1DA2,"Hot Spot"},
-	{0x1844,"Save"},
-	{0x0528,"Left$"},
-	{0x03FA,"Errn"},
-	{0x1DAE,"Priority On"},
+	{0xFF4C,"or"},
+	{0xFF58,"and"},
+	{0xFFD4,"mod"}
+
 };
 
 BOOL findSymbol(unsigned short token)
@@ -323,7 +344,7 @@ BOOL findSymbol(unsigned short token)
 
 
 
-BOOL findNativeCommand(unsigned short token)
+BOOL findNativeCommand(unsigned short lastToken, unsigned short token)
 {
 	struct nativeCommand *ptr;
 	int size = sizeof(NativeCommand)/sizeof(struct nativeCommand);
@@ -332,7 +353,12 @@ BOOL findNativeCommand(unsigned short token)
 	{
 		if (token == ptr->id ) 
 		{
-			if ((last_token_is==is_var)||(last_token_is==is_number)) printf(" ");
+			if (
+				(last_token_is==is_var)||
+				(last_token_is==is_string)||
+				(last_token_is==is_number)||
+				(lastToken == 0x007C)				// symbol ")"
+			) printf(" ");
 
 			if (space_after ==' ') printf(" ");
 			space_after = 0;
