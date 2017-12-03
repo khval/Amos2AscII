@@ -26,16 +26,6 @@ char space_after = 0;
 
 // structs are used read chunks of the AMOS file, so they need to be packed.
 
-void binrary(unsigned int num)
-{
-	int n;
-	for (n=31;n>-1;n--)
-	{
-		printf("%d",num & (1<<n) ? 1 : 0 );
-	}
-	printf("\n");
-
-}
 
 struct tokenStart {
 	char length;
@@ -68,6 +58,8 @@ struct rem
 {
 	unsigned short length;
 };
+
+BOOL token_reader( FILE *fd, unsigned short lastToken, unsigned short token, unsigned int tokenlength );
 
 // etch special syntax and commands in AMOS need to be handled with care.
 
@@ -131,7 +123,6 @@ void cmdLabelOnLine(FILE *fd, char *ptr)
 	buffer[ ref -> length ] = 0;
 	printf("%s:",buffer);
 }
-
 
 void cmdLabel(FILE *fd, char *ptr)
 {
@@ -214,6 +205,31 @@ void cmdHex(FILE *fd,char *ptr)
 	printf("$%08x", *((int *) ptr));
 }
 
+
+void cmdBin(FILE *fd,char *ptr)
+{
+	int num = *((int *) ptr);
+	int n;
+	int maxb;
+
+	if (space_after ==' ') printf(" ");
+	space_after = 0;
+
+	printf("%%");
+
+	maxb = 0;
+	for (n=31;n>-1;n--)
+	{
+		if (num & (1<<n)) { maxb = n; break; }
+	}
+
+	for (n=maxb;n>-1;n--)
+	{
+		printf("%d",num & (1<<n) ? 1 : 0 );
+	}
+}
+
+
 void cmdRepeat(FILE *fd,char *ptr)
 {
 	printf("Repeat");
@@ -259,6 +275,12 @@ void cmdOn(FILE *fd,char *ptr)
 	printf("On ");
 }
 
+void cmdProc(FILE *fd,char *ptr)
+{
+	commandCnt = 0;
+	space_after = 0;
+	printf("Proc ");
+}
 
 void cmdExit(FILE *fd,char *ptr)
 {
@@ -299,7 +321,7 @@ void cmdDivider(FILE *fd,char *ptr)
 	space_after = 0;
 	commandCnt = 0;
 	equal_symbol = FALSE;
-	printf(" : ");
+	printf(": ");
 }
 
 void cmdNewLine(FILE *fd,char *ptr)
@@ -365,6 +387,11 @@ struct callTable{
 struct callTable CallTable[] =
 {
 	{0x0000,	is_newline,	2,			cmdNewLine},
+	{0x0006, is_var,		sizeof(struct reference),cmdVar},
+	{0x000C, is_newline,	sizeof(struct reference),cmdLabelOnLine},		// label on line
+	{0x0012, is_procedure, 	sizeof(struct reference),cmdCallProcedure},
+	{0x0018, is_var,		sizeof(struct reference),cmdLabel},		// ref
+	{0x001E, is_number,	sizeof(int),	cmdBin},
 	{0x0026, is_string,		2,			cmdDoubleQuotes},
 	{0x002E, is_string,		2,			cmdSingelQuotes},
 	{0x0036, is_number,	sizeof(int),	cmdHex},
@@ -372,15 +399,11 @@ struct callTable CallTable[] =
 	{0x0046, is_number,	sizeof(int),	cmdFloat},
 	{0x004E, is_command,	sizeof(struct extensionCommand),cmdExtensionCommand},
 	{0x0054, is_commandDivider, 0, cmdDivider},
-	{0x0006, is_var,		sizeof(struct reference),cmdVar},
-	{0x0012, is_procedure, 	sizeof(struct reference),cmdCallProcedure},
-	{0x000C, is_newline,	sizeof(struct reference),cmdLabelOnLine},		// label on line
-	{0x0018, is_var,		sizeof(struct reference),cmdLabel},		// ref
 	{0x0376, is_newline,	sizeof(struct procedure),cmdProcedure},
+	{0x0386, is_command, 0, cmdProc},
 	{0x064A, is_newline,	sizeof(struct rem),cmdRem},
 	{0x0652, is_newline,	sizeof(struct rem),cmdRem2},
 	{0x3D45, is_newline,	sizeof(struct rem),cmdRem2},
-
 	{0x029E, is_command, 4,cmdExit},
 	{0x0034, is_command, 2,cmdExit},	// old exit command
 	{0x023C, is_command, 2,cmdFor},
@@ -397,7 +420,7 @@ struct callTable CallTable[] =
 	{0x02C6, is_command, 0,cmdThen}
 };
 
-BOOL token_reader( FILE *fd, unsigned int token, unsigned int tokenlength )
+BOOL token_reader( FILE *fd, unsigned short lastToken, unsigned short token, unsigned int tokenlength )
 {
 	char buffer[1024];
 	struct callTable *ptr;
@@ -413,18 +436,21 @@ BOOL token_reader( FILE *fd, unsigned int token, unsigned int tokenlength )
 	}
 
 	size = sizeof(CallTable)/sizeof(struct callTable);
-
 	for (ptr = CallTable; ptr < CallTable + size; ptr++ )
 	{
 		if (token == ptr->id ) 
 		{
 			if (ptr->type == is_command) commandCnt++;
 
-//			if (last_token_is == is_command) printf(" ");	// allways a space after commands?
-
 			token_is = ptr -> type;
-
 			fread(buffer, ptr->size, 1, fd);
+
+			if (
+				(last_token_is==is_var)||
+				(last_token_is==is_string)||
+				(last_token_is==is_number)||
+				(lastToken == 0x007C)				// symbol ")"
+			) printf(" ");
 
 			if (ptr->fn) ptr->fn( fd, buffer );
 
@@ -440,9 +466,7 @@ BOOL token_reader( FILE *fd, unsigned int token, unsigned int tokenlength )
 		return TRUE;
 	}
 
-//	if (last_token_is == is_command) printf(" ");	// allways a space after commands?
-
-	if (findNativeCommand(token))
+	if (findNativeCommand(lastToken, token))
 	{
 		commandCnt++;
 		token_is = is_command;
@@ -460,13 +484,15 @@ BOOL token_reader( FILE *fd, unsigned int token, unsigned int tokenlength )
 void code_reader( FILE *fd, unsigned int  tokenlength)
 {
 	struct tokenStart TokenStart;
+	unsigned short LastTokenNumber=0;
 	unsigned short TokenNumber;
 
-	token_reader(fd, 0 , tokenlength);	// new line
+	token_reader(fd, 0, 0 , tokenlength);	// new line
 
 	fread( &TokenNumber, 2, 1, fd );
-	while (token_reader( fd, TokenNumber, tokenlength ))
+	while (token_reader( fd, LastTokenNumber, TokenNumber, tokenlength ))
 	{
+		LastTokenNumber = TokenNumber;
 		last_token_is = token_is;
 		fread( &TokenNumber, 2, 1, fd );	// next;
 	}
