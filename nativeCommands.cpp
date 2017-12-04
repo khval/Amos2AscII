@@ -130,6 +130,7 @@ struct nativeCommand NativeCommand[]=
 	{0x0A04,"Screen Close "},
 	{0x0A18,"Screen Display"},
 	{0x0A36,"Screen Offset"},
+	{0x0A4E,"Screen Size"},
 	{0x0A5E,"Screen Color"},
 	{0x0A88,"Screen To Front "},
 	{0x0AA6,"Screen To Back "},
@@ -159,6 +160,9 @@ struct nativeCommand NativeCommand[]=
 	{0x0D2C,"Colour"},
 	{0x0D34,"Flash Off"},
 	{0x0D44,"Flash"},
+	{0x0D90,"Set Rainbow"},		// Set Rainbow V(1),V(2),V(3),V$(4),V$(5),V$(6)
+	{0x0DC2,"Rainbow Del"},
+	{0x0DDC,"Rainbow"},			// Rainbow V(1),V(2),V(3),V(4)
 	{0x0DFE,"Fade"},
 	{0x0E24,"Physic"},
 	{0x0E2C,"Autoback"},
@@ -209,11 +213,13 @@ struct nativeCommand NativeCommand[]=
 	{0x1454,"Curs On"},
 	{0x1462,"Inverse Off"},
 	{0x1474,"Inverse On"},
+	{0x1534,"Cleft"},
 	{0x158A,"Cline"},
 	{0x14C0,"Scroll Off"},
 	{0x14E0,"Scroll"},
 	{0x157C,"Cmove"},
 	{0x15AC,"Vscroll"},
+	{0x15E6,"X Curs"},		// x=X Curs
 	{0x15F2,"Y Curs"},
 	{0x1646,"Reserve Zone"},
 	{0x1660,"Reset Zone"},
@@ -233,7 +239,8 @@ struct nativeCommand NativeCommand[]=
 	{0x180C,"Bload"},
 	{0x181A,"Bsave"},
 	{0x1844,"Save"},
-	{0x184E,"Load"},
+	{0x184E,"Load"},	// Load name$
+	{0x185A,"Load"},	// Load name$,num
 	{0x1864,"Dfree"},
 	{0x1870,"Mkdir"},
 	{0x187C,"Lof"},
@@ -251,10 +258,13 @@ struct nativeCommand NativeCommand[]=
 	{0x1978,"Fsel$"},
 	{0x1986,"Set Sprite Buffer"},
 	{0x199E,"Sprite Off"},
+	{0x1A94,"Sprite"},		//	Sprite n,n,n,n
 	{0x1AA8,"Bob Off"},
 	{0x1A72,"Sprite Base"},
+	{0x1B8A,"Set Bob"},	// 	Set Bob n,n,n,n
 	{0x1B9E,"Bob"},
 	{0x1BAE,"Get Sprite Palette"},
+	{0x1BC8,"Get Sprite Palette"},	// Get Sprite Palette V1
 	{0x1C14,"Get Bob"},
 	{0x1C42,"Del Bob"},
 	{0x1C88,"Ins Bob"},
@@ -284,6 +294,7 @@ struct nativeCommand NativeCommand[]=
 	{0x204A,"Synchro On"},
 	{0x205A,"Synchro Off"},
 	{0x206C,"Synchro"},
+	{0x209A,"Update Every"},	// Update Every v1
 	{0x20AE,"Update"},
 	{0x20BA,"X Bob"},
 	{0x20C6,"Y Bob"},
