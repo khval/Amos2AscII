@@ -452,7 +452,8 @@ BOOL token_reader( FILE *fd, unsigned short lastToken, unsigned short token, uns
 				(last_token_is==is_label)||
 				(last_token_is==is_string)||
 				(last_token_is==is_number)||
-				(lastToken == 0x007C)				// symbol ")"
+				(lastToken == 0x007C)||		// symbol ")"
+				(lastToken == 0x008C)		// symbol "]"
 			) printf(" ");
 
 			if (ptr->fn) ptr->fn( fd, buffer );
