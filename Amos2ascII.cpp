@@ -282,6 +282,24 @@ void cmdProc(FILE *fd,char *ptr)
 	printf("Proc ");
 }
 
+void cmdLvo(FILE *fd,char *ptr)
+{
+	printf("Lvo");
+}
+
+void cmdEqu(FILE *fd,char *ptr)
+{
+	printf("Equ");
+}
+
+void cmdStruc(FILE *fd,char *ptr)
+{
+	printf("Struc");
+}
+
+// cmdStruc
+// cmdEqu
+
 void cmdExit(FILE *fd,char *ptr)
 {
 	printf("Exit");
@@ -419,7 +437,10 @@ struct callTable CallTable[] =
 	{0x0404, is_command, 2,cmdData},
 	{0x25A4, is_command, 2,cmdElseIf},
 	{0x0290, is_command, 4,cmdExitIf},
-	{0x02C6, is_command, 0,cmdThen}
+	{0x02C6, is_command, 0,cmdThen},
+	{0x2A40, is_command, 6,cmdEqu},
+	{0x2A4A, is_command, 6,cmdLvo},
+	{0x2A54, is_command, 6,cmdStruc}
 };
 
 BOOL token_reader( FILE *fd, unsigned short lastToken, unsigned short token, unsigned int tokenlength )
