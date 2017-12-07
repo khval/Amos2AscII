@@ -102,6 +102,7 @@ struct nativeCommand NativeCommand[]=
 	{0x0598,"Str$"},
 	{0x05A4,"Val"},
 	{0x05AE,"Bin$"},
+	{0x05C4,"Hex$"},
 	{0x05D0,"Hex$"},
 	{0x05DA,"Len"},
 	{0x05E4,"Instr"},	// Instr(str,str)
@@ -110,6 +111,7 @@ struct nativeCommand NativeCommand[]=
 	{0x0614,"Varptr"},
 	{0x0640,"Dim"},
 	{0x0670,"Edit"},
+	{0x0686,"Rnd"},
 	{0x06A0,"Sgn"},
 	{0x06AA,"Abs"},
 	{0x06CA,"Degree"},
@@ -138,6 +140,7 @@ struct nativeCommand NativeCommand[]=
 	{0x0A88,"Screen To Front "},
 	{0x0AA6,"Screen To Back "},
 	{0x0AC0,"Screen Hide"},
+	{0x0AC8,"Screen Show"},		// Screen Show with out args
 	{0x0ADA,"Screen Show"},
 	{0x0AE2,"Screen Swap"},
 	{0x0AF4,"Screen Swap"},
@@ -152,7 +155,9 @@ struct nativeCommand NativeCommand[]=
 	{0x0BEE,"X Hard"},
 	{0x0C06,"Y Hard"},
 	{0x0C1E,"X Screen"},
+	{0x0C2E,"X Screen"}, 	// X Screen( screen, x )
 	{0x0C38,"Y Screen"},
+	{0x0C48,"Y Screen"},	// Y Screen( screen, y )
 	{0x0C6E,"Screen"},		// setScreen
 	{0x0C7C,"Screen"},	// getScreen
 	{0x0C84,"Hires"},
@@ -178,6 +183,7 @@ struct nativeCommand NativeCommand[]=
 	{0x0E56,"Point"},
 	{0x0E64,"Draw"},			// Draw To x,y
 	{0x0E74,"Draw"},			// Draw x,y To X,y
+	{0x0E86,"Ellipse"},			// Ellipse x,y,rx,ry
 	{0x0EAC,"Polyline"},
 	{0x0EBA,"Polygon"},
 	{0x0EC8,"Bar"},
@@ -186,6 +192,7 @@ struct nativeCommand NativeCommand[]=
 	{0x0F16,"Text Length"},
 	{0x0F3A,"Text Base"},
 	{0x0F4A,"Text"},
+	{0x0F5A,"Set Text"},
 	{0x0F6A,"Set Paint"},
 	{0x0F8A,"Get Disc Fonts"},
 	{0x0FB2,"Set Font"},
@@ -196,9 +203,12 @@ struct nativeCommand NativeCommand[]=
 	{0x105A,"Ink"},		// Ink 0,0,0
 	{0x1066,"Gr Writing"},
 	{0x1078,"Clip"},
+	{0x1084,"Clip"},		// clip x,y To x,y
 	{0x10D6,"Zoom"},
 	{0x1146,"Get Block"},	// Get Block n,x.y.x.y
+	{0x1160,"Get Block"},	// Get Block n,x,y,x,y,n
 	{0x1172,"Put Block"},	// Put Block n
+	{0x1184,"Put Block"},	// Put Block n,x,y
 	{0x11BE,"Del Block"},
 	{0x11C6,"Key Speed"},
 	{0x11D8,"Key State"},
@@ -233,6 +243,7 @@ struct nativeCommand NativeCommand[]=
 	{0x15E6,"X Curs"},		// x=X Curs
 	{0x15F2,"Y Curs"},
 	{0x1646,"Reserve Zone"},
+	{0x164E,"Reset Zone"},		// no args
 	{0x1660,"Reset Zone"},
 	{0x1668,"Set Zone"},
 	{0x168E,"Zone"},
@@ -274,16 +285,20 @@ struct nativeCommand NativeCommand[]=
 	{0x1978,"Fsel$"},
 	{0x1986,"Set Sprite Buffer"},
 	{0x199E,"Sprite Off"},
+	{0x1A72,"Sprite Base"},
 	{0x1A94,"Sprite"},		//	Sprite n,n,n,n
 	{0x1AA8,"Bob Off"},
-	{0x1A72,"Sprite Base"},
+	{0x1AB6,"Bob Off"},	//	Bob Off n
+	{0x1B7A,"Limit Bob"},	//	Limit Bob	n,x,y To x,y
 	{0x1B8A,"Set Bob"},	// 	Set Bob n,n,n,n
 	{0x1B9E,"Bob"},
 	{0x1BAE,"Get Sprite Palette"},
 	{0x1BC8,"Get Sprite Palette"},	// Get Sprite Palette V1
+	{0x1BFC,"Get Bob"},	// Get Bob n,x,y To x,y
 	{0x1C14,"Get Bob"},
 	{0x1C42,"Del Bob"},
 	{0x1C88,"Ins Bob"},
+	{0x1CC6,"Get Icon"},	// Get Icon n,x,y To x,y
 	{0x1CFE,"Paste Bob"},
 	{0x1DA2,"Hot Spot"},
 	{0x1DAE,"Priority On"},
@@ -295,6 +310,7 @@ struct nativeCommand NativeCommand[]=
 	{0x1E16,"X Mouse"},
 	{0x1E24,"Y Mouse"},
 	{0x1E32,"Mouse Key"},
+	{0x1E42,"Mouse Click"},
 	{0x1E54,"Limit Mouse"},		// no args
 	{0x1E6E,"Limit Mouse"},
 	{0x1F94,"Channel"},
@@ -342,6 +358,8 @@ struct nativeCommand NativeCommand[]=
 	{0x23E0,"I Bob"},
 	{0x2430,"Dev First$"},
 	{0x2442,"Dev Next$"},
+	{0x2452,"Hrev Block"},	// Hrev Block n
+	{0x2464,"Vrev Block"},	// Vrev Block n
 	{0x2498,"Bank Swap"},
 	{0x24AA,"Amos To Front"},
 	{0x24BE,"Amos To Back "},
@@ -356,6 +374,7 @@ struct nativeCommand NativeCommand[]=
 	{0x26C8,"Erase"},
 	{0x2704,"Dialog Box"},
 	{0x2720,"Dialog Open"},
+	{0x2736,"Dialog Open"},		//	Dialog Open n,n,n
 	{0x2764,"Dialog Close"},
 	{0x277E,"Dialog Run"},
 	{0x2796,"Dialog"},
@@ -363,6 +382,7 @@ struct nativeCommand NativeCommand[]=
 	{0x27B6,"Vdialog$"},
 	{0x27C8,"Rdialog"},
 	{0x27E6,"Rdialog$"},
+	{0x2804,"Edialog"},
 	{0x2824,"Dialog Update"},
 	{0x2848,"Dialog Update"},	//	Dialog Update n,n,n,n
 	{0x2856,"Dialog Update"},	//	Dialog Update n,n,n,n,n
@@ -375,6 +395,7 @@ struct nativeCommand NativeCommand[]=
 	{0x28BE,"Peek$"},
 	{0x28CA,"Resource Bank"},
 	{0x28DE,"Resource$"},
+	{0x28EE,"Resource Screen Open"},		// Resource Screen Open number,width,height,flash
 	{0x292A,"Read Text"},
 	{0x2946,"Err$"},
 	{0x2962,"Errtrap"},
