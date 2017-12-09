@@ -164,9 +164,6 @@ void cmdVar(FILE *fd, char *ptr)
 
 void cmdInt(FILE *fd,char *ptr)
 {
-	if (space_after ==' ') printf(" ");
-	space_after = 0;
-
 	printf("%d", *((int *) ptr));
 }
 
@@ -178,9 +175,6 @@ void cmdFloat(FILE *fd,char *ptr)
 	if (data & 32) e |= 0xFFFFFFE0;
 	int n;
 	double f = 0.0f;
-
-	if (space_after ==' ') printf(" ");
-	space_after = 0;
 
 	for (n=23;n>-1;n--)
 	{
@@ -199,9 +193,6 @@ void cmdFloat(FILE *fd,char *ptr)
 
 void cmdHex(FILE *fd,char *ptr)
 {
-	if (space_after ==' ') printf(" ");
-	space_after = 0;
-
 	printf("$%08x", *((int *) ptr));
 }
 
@@ -211,9 +202,6 @@ void cmdBin(FILE *fd,char *ptr)
 	int num = *((int *) ptr);
 	int n;
 	int maxb;
-
-	if (space_after ==' ') printf(" ");
-	space_after = 0;
 
 	printf("%%");
 
@@ -244,42 +232,42 @@ void cmdFor (FILE *fd,char *ptr)
 {
 	commandCnt = 0;
 	space_after = 0;
-	printf("For ");
+	printf("For");
 }
 
 void cmdWhile(FILE *fd,char *ptr)
 {
 	commandCnt = 0;
 	space_after = 0;
-	printf("While ");
+	printf("While");
 }
 
 void cmdUntil(FILE *fd,char *ptr)
 {
 	commandCnt = 0;
 	space_after = 0;
-	printf("Until ");
+	printf("Until");
 }
 
 void cmdIf(FILE *fd,char *ptr)
 {
 	commandCnt = 0;
 	space_after = 0;
-	printf("If ");
+	printf("If");
 }
 
 void cmdOn(FILE *fd,char *ptr)
 {
 	commandCnt = 0;
 	space_after = 0;
-	printf("On ");
+	printf("On");
 }
 
 void cmdProc(FILE *fd,char *ptr)
 {
 	commandCnt = 0;
 	space_after = 0;
-	printf("Proc ");
+	printf("Proc");
 }
 
 void cmdLvo(FILE *fd,char *ptr)
@@ -314,19 +302,19 @@ void cmdThen(FILE *fd,char *ptr)
 {
 	commandCnt = 0;
 	space_after = 0;
-	printf(" then ");
+	printf("then");
 }
 
 void cmdElseIf(FILE *fd,char *ptr)
 {
 	commandCnt = 0;
 	space_after = 0;
-	printf("Else If ");
+	printf("Else If");
 }
 
 void cmdExitIf(FILE *fd,char *ptr)
 {
-	printf("Exit If ");
+	printf("Exit If");
 }
 
 void cmdData(FILE *fd,char *ptr)
@@ -473,6 +461,7 @@ BOOL token_reader( FILE *fd, unsigned short lastToken, unsigned short token, uns
 				(last_token_is==is_label)||
 				(last_token_is==is_string)||
 				(last_token_is==is_number)||
+				(last_token_is==is_command)||
 				(lastToken == 0x007C)||		// symbol ")"
 				(lastToken == 0x008C)		// symbol "]"
 			) printf(" ");
