@@ -56,19 +56,20 @@ struct nativeCommand NativeCommand[]=
 	{0x0274,"Wend"},
 	{0x0286,"Loop"},
 	{0x02A8,"Goto "},
-	{0x02B2,"Gosub "},
+	{0x02B2,"Gosub"},
 	{0x02DA,"End if"},
 	{0x02E6,"On Error"},
 	{0x031E,"Resume Label"},
 	{0x0330,"Resume"},
 	{0x033C,"Pop Proc"},
-	{0x0356," Step"},
+	{0x0356,"Step"},
 	{0x0360,"Return"},
 	{0x036C,"Pop"},
 	{0x0386,"Proc"},
 	{0x0390,"End Proc"},
 	{0x039E,"Shared"},
 	{0x03AA,"Global"},
+	{0x03B6,"End"},
 	{0x03C0,"Stop"},
 	{0x03D6,"Param$"},
 	{0x03E2,"Param"},
@@ -120,6 +121,7 @@ struct nativeCommand NativeCommand[]=
 	{0x0702,"Sin"},	
 	{0x070C,"Cos"},
 	{0x072C,"Acos"},
+	{0x0768,"Sqr"},
 	{0x07B8,"Menu On"},
 	{0x07C6,"Menu Off"},
 	{0x084E,"Menu Key"},
@@ -144,6 +146,8 @@ struct nativeCommand NativeCommand[]=
 	{0x0ADA,"Screen Show"},
 	{0x0AE2,"Screen Swap"},
 	{0x0AF4,"Screen Swap"},
+	{0x0B20,"Auto View Off"},
+	{0x0B34,"Auto View On"},
 	{0x0B46,"Screen Base"},
 	{0x0B58,"Screen Width"},
 	{0x0B74,"Screen Height"},
@@ -168,13 +172,16 @@ struct nativeCommand NativeCommand[]=
 	{0x0CD8,"Default Palette"},
 	{0x0CEE,"Default"},
 	{0x0CFC,"Palette"},
+	{0x0D0A,"Colour Back"},
 	{0x0D1C,"Colour"},
 	{0x0D2C,"Colour"},
 	{0x0D34,"Flash Off"},
 	{0x0D44,"Flash"},
+	{0x0D62,"Shift Up"},
 	{0x0D90,"Set Rainbow"},		// Set Rainbow V(1),V(2),V(3),V$(4),V$(5),V$(6)
 	{0x0DC2,"Rainbow Del"},
 	{0x0DDC,"Rainbow"},			// Rainbow V(1),V(2),V(3),V(4)
+	{0x0DF0,"Rain"},
 	{0x0DFE,"Fade"},
 	{0x0E24,"Physic"},
 	{0x0E2C,"Autoback"},
@@ -197,6 +204,8 @@ struct nativeCommand NativeCommand[]=
 	{0x0F8A,"Get Disc Fonts"},
 	{0x0FB2,"Set Font"},
 	{0x0FC2,"Font$"},
+	{0x0FCE,"Hslider"},		// Hslider n,n To n,n,n,n,n
+	{0x1002,"Set Slider"},	// Set Slider n,n,n,n,n,n,n,n
 	{0x1022,"Set Pattern"},
 	{0x1044,"Ink"},
 	{0x1050,"Ink"},
@@ -212,8 +221,11 @@ struct nativeCommand NativeCommand[]=
 	{0x11BE,"Del Block"},
 	{0x11C6,"Key Speed"},
 	{0x11D8,"Key State"},
+	{0x1202,"Jup"},
+	{0x120C,"Jdown"},
 	{0x1218,"Jleft"},
 	{0x1224,"Jright"},
+	{0x1232,"Fire"},
 	{0x123E,"True"},
 	{0x1248,"False"},
 	{0x1254,"Put Key"},
@@ -286,6 +298,7 @@ struct nativeCommand NativeCommand[]=
 	{0x1986,"Set Sprite Buffer"},
 	{0x199E,"Sprite Off"},
 	{0x1A72,"Sprite Base"},
+	{0x1A84,"Icon Base"},
 	{0x1A94,"Sprite"},		//	Sprite n,n,n,n
 	{0x1AA8,"Bob Off"},
 	{0x1AB6,"Bob Off"},	//	Bob Off n
@@ -298,8 +311,10 @@ struct nativeCommand NativeCommand[]=
 	{0x1C14,"Get Bob"},
 	{0x1C42,"Del Bob"},
 	{0x1C88,"Ins Bob"},
+	{0x1CA6,"Get Icon Palette"},
 	{0x1CC6,"Get Icon"},	// Get Icon n,x,y To x,y
 	{0x1CFE,"Paste Bob"},
+	{0x1D12,"Paste Icon"},	// Paste Icon n,n,n
 	{0x1DA2,"Hot Spot"},
 	{0x1DAE,"Priority On"},
 	{0x1DD2,"Hide On"},
@@ -313,6 +328,7 @@ struct nativeCommand NativeCommand[]=
 	{0x1E42,"Mouse Click"},
 	{0x1E54,"Limit Mouse"},		// no args
 	{0x1E6E,"Limit Mouse"},
+	{0x1F86,"Chanmv"},	// Chanmv(a)
 	{0x1F94,"Channel"},
 	{0x1FA2,"Amreg"},		// Amreg(a)
 	{0x1FB0,"Amreg"},		// Amreg(a,b)
@@ -320,6 +336,8 @@ struct nativeCommand NativeCommand[]=
 	{0x1FCA,"Amal On"},
 	{0x1FD2,"Amal Off"},	// no args
 	{0x1FE2,"Amal Off"},
+	{0x1FEA,"Amal Freeze"},
+	{0x1FFC,"Amal Freeze"},	// Amal Freeze n
 	{0x2004,"Amalerr"},
 	{0x2012,"Amal"},
 	{0x2020,"Amal"},	// Amal num,str to num
@@ -349,8 +367,10 @@ struct nativeCommand NativeCommand[]=
 	{0x2218,"Bclr"},
 	{0x2226,"Bchg"},
 	{0x2234,"Btst"},
+	{0x2288,"Rol.l"},		// Rol.l	n,n
 	{0x2296,"Areg"},
 	{0x22A2,"Dreg"},
+	{0x2394,"Prun"},
 	{0x23AC,"Put"},
 	{0x23B8,"Get"},
 	{0x23C4,"System"},
@@ -363,18 +383,30 @@ struct nativeCommand NativeCommand[]=
 	{0x2498,"Bank Swap"},
 	{0x24AA,"Amos To Front"},
 	{0x24BE,"Amos To Back "},
+	{0x24E0,"Amos Lock"},
 	{0x2516,"Ntsc"},
 	{0x2520,"Laced"},
+	{0x252C,"Prg State"},
 	{0x253C,"Command Line$"},
 	{0x2550,"Disc Info$"},
 	{0x2578,"Set Accessory"},
 	{0x259A,"Trap"},
 	{0x25C0,"Array"},
+	{0x25E0,"Frame Load"},		//	Frame Load(n To n,n)
+	{0x25EC,"Frame Play"},		//	Frame Play n,n
+	{0x2600,"Frame Play"},		//	Frame Play n,n,n
 	{0x260C,"Iff Anim"},
+	{0x262A,"Frame Length"},	//	Frame Length(n)
+	{0x2676,"Call Editor"},		//	Call Editor n
+	{0x268A,"Call Editor"},		//	Call Editor n,n
+	{0x2694,"Call Editor"},		//
+	{0x26A0,"Ask Editor"},
 	{0x26C8,"Erase"},
 	{0x2704,"Dialog Box"},
 	{0x2720,"Dialog Open"},
 	{0x2736,"Dialog Open"},		//	Dialog Open n,n,n
+	{0x2742,"Dialog Open"},		//	Dialog Open n,n,n,n
+	{0x2750,"Dialog Close"},	//	Dialog Close  --- No args
 	{0x2764,"Dialog Close"},
 	{0x277E,"Dialog Run"},
 	{0x2796,"Dialog"},
@@ -384,6 +416,7 @@ struct nativeCommand NativeCommand[]=
 	{0x27E6,"Rdialog$"},
 	{0x2804,"Edialog"},
 	{0x2824,"Dialog Update"},
+	{0x283C,"Dialog Update"},	//	Dialog Update n,n,n
 	{0x2848,"Dialog Update"},	//	Dialog Update n,n,n,n
 	{0x2856,"Dialog Update"},	//	Dialog Update n,n,n,n,n
 	{0x2866,"Dialog Freeze"},
@@ -396,6 +429,7 @@ struct nativeCommand NativeCommand[]=
 	{0x28CA,"Resource Bank"},
 	{0x28DE,"Resource$"},
 	{0x28EE,"Resource Screen Open"},		// Resource Screen Open number,width,height,flash
+	{0x2910,"Resource Unpack"},			// Resource Unpack n,n
 	{0x292A,"Read Text"},
 	{0x2946,"Err$"},
 	{0x2962,"Errtrap"},
@@ -414,6 +448,7 @@ struct nativeCommand NativeCommand[]=
 	{0x2B3E,"Exec"},
 	{0x2B58,"Screen Mode"},
 	{0x2B72,"Kill Editor"},
+	{0x2BE2,"Zdialog"},		// Zdialog(x,y)
 	{0xFF4C,"or"},
 	{0xFF58,"and"},
 	{0xFFD4,"mod"}
@@ -456,16 +491,13 @@ BOOL findNativeCommand(unsigned short lastToken, unsigned short token)
 				(last_token_is==is_label)||
 				(last_token_is==is_string)||
 				(last_token_is==is_number)||
+				(last_token_is==is_command)||
 				(lastToken == 0x007C)				// symbol ")"
 			) printf(" ");
 
-			if (space_after ==' ') printf(" ");
-			space_after = 0;
-
 			printf("%s", ptr -> name);
-			space_after=' ';
 
-			equal_symbol = FALSE;
+//			equal_symbol = FALSE;
 
 			return TRUE;
 		}
