@@ -77,6 +77,7 @@ struct nativeCommand NativeCommand[]=
 	{0x040E,"Read"},
 	{0x0418,"Restore"},
 	{0x0426,"Break Off"},
+	{0x0436,"Break On"},
 	{0x0444,"Inc"},
 	{0X044E,"Dec"},
 	{0x0458,"Add"},
@@ -111,6 +112,8 @@ struct nativeCommand NativeCommand[]=
 	{0x060A,"Free"},
 	{0x0614,"Varptr"},
 	{0x0640,"Dim"},
+	{0x0658,"Sort"},	// Sort( array )
+	{0x0662,"Match"},	// =Match( array, str )
 	{0x0670,"Edit"},
 	{0x0686,"Rnd"},
 	{0x06A0,"Sgn"},
@@ -139,13 +142,15 @@ struct nativeCommand NativeCommand[]=
 	{0x0A36,"Screen Offset"},
 	{0x0A4E,"Screen Size"},
 	{0x0A5E,"Screen Color"},
-	{0x0A88,"Screen To Front "},
-	{0x0AA6,"Screen To Back "},
+	{0x0A88,"Screen To Front"},
+	{0x0A90,"Screen To Back"},		// No args
+	{0x0AA6,"Screen To Back"},
 	{0x0AC0,"Screen Hide"},
 	{0x0AC8,"Screen Show"},		// Screen Show with out args
 	{0x0ADA,"Screen Show"},
 	{0x0AE2,"Screen Swap"},
 	{0x0AF4,"Screen Swap"},
+	{0x0B16,"View"},				// View
 	{0x0B20,"Auto View Off"},
 	{0x0B34,"Auto View On"},
 	{0x0B46,"Screen Base"},
@@ -177,12 +182,15 @@ struct nativeCommand NativeCommand[]=
 	{0x0D2C,"Colour"},
 	{0x0D34,"Flash Off"},
 	{0x0D44,"Flash"},
+	{0x0D52,"Shift Off"},
 	{0x0D62,"Shift Up"},
 	{0x0D90,"Set Rainbow"},		// Set Rainbow V(1),V(2),V(3),V$(4),V$(5),V$(6)
 	{0x0DC2,"Rainbow Del"},
+	{0x0DD4,"Rainbow Del"},		// Rainbow Del n
 	{0x0DDC,"Rainbow"},			// Rainbow V(1),V(2),V(3),V(4)
 	{0x0DF0,"Rain"},
 	{0x0DFE,"Fade"},
+	{0x0E08,"Phybase"},		// =Phybase(n)
 	{0x0E24,"Physic"},
 	{0x0E2C,"Autoback"},
 	{0x0E3C,"Plot"},
@@ -191,11 +199,13 @@ struct nativeCommand NativeCommand[]=
 	{0x0E64,"Draw"},			// Draw To x,y
 	{0x0E74,"Draw"},			// Draw x,y To X,y
 	{0x0E86,"Ellipse"},			// Ellipse x,y,rx,ry
+	{0x0E9A,"Circle"},			// Circle x,y,r
 	{0x0EAC,"Polyline"},
 	{0x0EBA,"Polygon"},
 	{0x0EC8,"Bar"},
 	{0x0ED8,"Box"},
 	{0x0EE8,"Paint"},
+	{0x0F04,"Gr Locate"},
 	{0x0F16,"Text Length"},
 	{0x0F3A,"Text Base"},
 	{0x0F4A,"Text"},
@@ -207,17 +217,20 @@ struct nativeCommand NativeCommand[]=
 	{0x0FCE,"Hslider"},		// Hslider n,n To n,n,n,n,n
 	{0x1002,"Set Slider"},	// Set Slider n,n,n,n,n,n,n,n
 	{0x1022,"Set Pattern"},
+	{0x1034,"Set Line"},
 	{0x1044,"Ink"},
 	{0x1050,"Ink"},
 	{0x105A,"Ink"},		// Ink 0,0,0
 	{0x1066,"Gr Writing"},
 	{0x1078,"Clip"},
 	{0x1084,"Clip"},		// clip x,y To x,y
+	{0x10AC,"Set Tempras"},	// Set Tempras addr,length
 	{0x10D6,"Zoom"},
 	{0x1146,"Get Block"},	// Get Block n,x.y.x.y
 	{0x1160,"Get Block"},	// Get Block n,x,y,x,y,n
 	{0x1172,"Put Block"},	// Put Block n
 	{0x1184,"Put Block"},	// Put Block n,x,y
+	{0x11AE,"Del Block"},	// no args
 	{0x11BE,"Del Block"},
 	{0x11C6,"Key Speed"},
 	{0x11D8,"Key State"},
@@ -236,8 +249,10 @@ struct nativeCommand NativeCommand[]=
 	{0x129E,"Wait"},
 	{0x12CE,"Timer"},
 	{0x12DA,"Wind Open"},
+	{0x12F4,"Wind Open"},	// Wind Open n,n, n,n, n,n
 	{0x1378,"Locate"},
 	{0x1388,"Clw"},
+	{0x1392,"Home"},
 	{0x13C6,"At"},
 	{0x13D2,"Pen"},
 	{0x13DC,"Paper"},
@@ -252,12 +267,16 @@ struct nativeCommand NativeCommand[]=
 	{0x14E0,"Scroll"},
 	{0x157C,"Cmove"},
 	{0x15AC,"Vscroll"},
-	{0x15E6,"X Curs"},		// x=X Curs
-	{0x15F2,"Y Curs"},
+	{0x15E6,"X Curs"},			// x=X Curs
+	{0x15F2,"Y Curs"},			// y=Y Curs
+	{0x161E,"Xgr"},			// Xgr
+	{0x1628,"Ygr"},			// Ygr
+	{0x1632,"Reserve Zone"},	// Reserve Zone n
 	{0x1646,"Reserve Zone"},
 	{0x164E,"Reset Zone"},		// no args
 	{0x1660,"Reset Zone"},
 	{0x1668,"Set Zone"},
+	{0x1680,"Zone"},		// =Zone( x, y )
 	{0x168E,"Zone"},
 	{0x16B6,"Scin"},
 	{0x16D0,"Mouse Screen"},
@@ -271,6 +290,7 @@ struct nativeCommand NativeCommand[]=
 	{0x175A,"Dir$"},
 	{0x17B6,"Set Dir"},
 	{0x17C4,"Set Dir"},		// Set Dir num,fliter$
+	{0x17D4,"Load Iff"},	// Load Iff name,num
 	{0x17E4,"Load Iff"},
 	{0x180C,"Bload"},
 	{0x181A,"Bsave"},
@@ -291,30 +311,35 @@ struct nativeCommand NativeCommand[]=
 	{0x1914,"Parent"},
 	{0x1920,"Rename"},
 	{0x1930,"Kill"},
+	{0x193C,"Drive"},
 	{0x1948,"Field"},
 	{0x1954,"Fsel$"},
 	{0x196C,"Fsel$"},
 	{0x1978,"Fsel$"},
 	{0x1986,"Set Sprite Buffer"},
 	{0x199E,"Sprite Off"},
+	{0x1A44,"Sprite Col"},	//	=Sprite Col( n,n To n )
 	{0x1A72,"Sprite Base"},
 	{0x1A84,"Icon Base"},
-	{0x1A94,"Sprite"},		//	Sprite n,n,n,n
+	{0x1A94,"Sprite"},			// Sprite n,n,n,n
 	{0x1AA8,"Bob Off"},
-	{0x1AB6,"Bob Off"},	//	Bob Off n
-	{0x1B7A,"Limit Bob"},	//	Limit Bob	n,x,y To x,y
-	{0x1B8A,"Set Bob"},	// 	Set Bob n,n,n,n
+	{0x1AB6,"Bob Off"},		// Bob Off n
+	{0x1B7A,"Limit Bob"},		// Limit Bob	n,x,y To x,y
+	{0x1B8A,"Set Bob"},		// Set Bob n,n,n,n
 	{0x1B9E,"Bob"},
 	{0x1BAE,"Get Sprite Palette"},
 	{0x1BC8,"Get Sprite Palette"},	// Get Sprite Palette V1
-	{0x1BFC,"Get Bob"},	// Get Bob n,x,y To x,y
+	{0x1BD0,"Get Sprite"},		// Get Sprite n,x,y To x,y
+	{0x1BFC,"Get Bob"},		// Get Bob n,x,y To x,y
 	{0x1C14,"Get Bob"},
+	{0x1C26,"Del Sprite"},		// Del Sprite n
 	{0x1C42,"Del Bob"},
 	{0x1C88,"Ins Bob"},
 	{0x1CA6,"Get Icon Palette"},
-	{0x1CC6,"Get Icon"},	// Get Icon n,x,y To x,y
+	{0x1CC6,"Get Icon"},		// Get Icon n,x,y To x,y
 	{0x1CFE,"Paste Bob"},
-	{0x1D12,"Paste Icon"},	// Paste Icon n,n,n
+	{0x1D12,"Paste Icon"},		// Paste Icon n,n,n
+	{0x1D28,"Reserve Zone"},	// Reserve Zone n
 	{0x1DA2,"Hot Spot"},
 	{0x1DAE,"Priority On"},
 	{0x1DD2,"Hide On"},
@@ -348,6 +373,8 @@ struct nativeCommand NativeCommand[]=
 	{0x20AE,"Update"},
 	{0x20BA,"X Bob"},
 	{0x20C6,"Y Bob"},
+	{0x20D2,"X Sprite"},
+	{0x20E2,"Y Sprite"},
 	{0x20F2,"Reserve As Work"},
 	{0x210A,"Reserve As Chip Work"},
 	{0x2128,"Reserve As Data"},
@@ -384,6 +411,7 @@ struct nativeCommand NativeCommand[]=
 	{0x24AA,"Amos To Front"},
 	{0x24BE,"Amos To Back "},
 	{0x24E0,"Amos Lock"},
+	{0x24F0,"Amos Unlock"},
 	{0x2516,"Ntsc"},
 	{0x2520,"Laced"},
 	{0x252C,"Prg State"},
@@ -415,6 +443,7 @@ struct nativeCommand NativeCommand[]=
 	{0x27C8,"Rdialog"},
 	{0x27E6,"Rdialog$"},
 	{0x2804,"Edialog"},
+	{0x2812,"Dialog Clr"},		//	Dialog Clr n
 	{0x2824,"Dialog Update"},
 	{0x283C,"Dialog Update"},	//	Dialog Update n,n,n
 	{0x2848,"Dialog Update"},	//	Dialog Update n,n,n,n
