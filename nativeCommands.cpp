@@ -39,12 +39,14 @@ struct nativeCommand NativeCommand[]=
 	{0x00BC," Fn"},
 	{0x00E0,"Resume Next"},
 	{0x00F2,"Inkey$"},
+	{0x00FE,"Repeat$"},
 	{0x010E,"Zone$"},
 	{0x011C,"Border$"},
 	{0x012C,"Double Buffer"},
 	{0x0140,"Start"},
 	{0x014C,"Length"},
 	{0x015A,"Doke"},
+	{0x019C,"Every On"},
 	{0x01BA,"Logbase"},
 	{0x01D4,"Logic"},
 	{0x01DC,"Asc"},
@@ -62,6 +64,7 @@ struct nativeCommand NativeCommand[]=
 	{0x031E,"Resume Label"},
 	{0x0330,"Resume"},
 	{0x033C,"Pop Proc"},
+	{0x034A,"Every"},
 	{0x0356,"Step"},
 	{0x0360,"Return"},
 	{0x036C,"Pop"},
@@ -85,6 +88,7 @@ struct nativeCommand NativeCommand[]=
 	{0x046A,"Print"},		// Print to file
 	{0x0476,"Print"},
 	{0x0482,"Lprint"},
+	{0x048E,"Input$"},		//	=Input$(max)
 	{0x049C,"Input$"},
 	{0x04A6,"Using"},
 	{0x04B2,"Input"},
@@ -96,6 +100,7 @@ struct nativeCommand NativeCommand[]=
 	{0x051E,"Mid$"},	// Mid$(txt,start)
 	{0x0528,"Left$"},
 	{0x0536,"Right$"},
+	{0x0546,"Flip$"},
 	{0x0552,"Chr$"},
 	{0x055E,"Space$"},
 	{0x056C,"String$"},
@@ -104,26 +109,34 @@ struct nativeCommand NativeCommand[]=
 	{0x0598,"Str$"},
 	{0x05A4,"Val"},
 	{0x05AE,"Bin$"},
+	{0x05BA,"Bin$"},	// = Bin$(num,max)
 	{0x05C4,"Hex$"},
 	{0x05D0,"Hex$"},
 	{0x05DA,"Len"},
 	{0x05E4,"Instr"},	// Instr(str,str)
 	{0x05F4,"Instr"},	// Instr(str,str,n)
+	{0x0600,"Tab$"},
 	{0x060A,"Free"},
 	{0x0614,"Varptr"},
+	{0x0620,"Remember X"},
 	{0x0640,"Dim"},
 	{0x0658,"Sort"},	// Sort( array )
 	{0x0662,"Match"},	// =Match( array, str )
 	{0x0670,"Edit"},
+	{0x067A,"Direct"},
 	{0x0686,"Rnd"},
+	{0x0690,"Randomize Timer"},
 	{0x06A0,"Sgn"},
 	{0x06AA,"Abs"},
 	{0x06CA,"Degree"},
+	{0x06D6,"Pi#"},
 	{0x06EA,"Min"},
 	{0x06F6,"Max"},
 	{0x0702,"Sin"},	
 	{0x070C,"Cos"},
 	{0x072C,"Acos"},
+	{0x0744,"Hsin"},
+	{0x0750,"Hcos"},
 	{0x0768,"Sqr"},
 	{0x07B8,"Menu On"},
 	{0x07C6,"Menu Off"},
@@ -142,9 +155,11 @@ struct nativeCommand NativeCommand[]=
 	{0x0A36,"Screen Offset"},
 	{0x0A4E,"Screen Size"},
 	{0x0A5E,"Screen Color"},
+	{0x0A72,"Screen To Front"},		// Screen To Front n
 	{0x0A88,"Screen To Front"},
 	{0x0A90,"Screen To Back"},		// No args
 	{0x0AA6,"Screen To Back"},
+	{0x0AAE,"Screen Hide"},		// Screen Hide n
 	{0x0AC0,"Screen Hide"},
 	{0x0AC8,"Screen Show"},		// Screen Show with out args
 	{0x0ADA,"Screen Show"},
@@ -167,6 +182,8 @@ struct nativeCommand NativeCommand[]=
 	{0x0C2E,"X Screen"}, 	// X Screen( screen, x )
 	{0x0C38,"Y Screen"},
 	{0x0C48,"Y Screen"},	// Y Screen( screen, y )
+	{0x0C52,"X Text"},
+	{0x0C60,"Y Text"},
 	{0x0C6E,"Screen"},		// setScreen
 	{0x0C7C,"Screen"},	// getScreen
 	{0x0C84,"Hires"},
@@ -215,6 +232,7 @@ struct nativeCommand NativeCommand[]=
 	{0x0FB2,"Set Font"},
 	{0x0FC2,"Font$"},
 	{0x0FCE,"Hslider"},		// Hslider n,n To n,n,n,n,n
+	{0x0FE8,"Vslider"},		// Vslider n,n To n,n,n,n,n
 	{0x1002,"Set Slider"},	// Set Slider n,n,n,n,n,n,n,n
 	{0x1022,"Set Pattern"},
 	{0x1034,"Set Line"},
@@ -234,6 +252,7 @@ struct nativeCommand NativeCommand[]=
 	{0x11BE,"Del Block"},
 	{0x11C6,"Key Speed"},
 	{0x11D8,"Key State"},
+	{0x11E8,"Key Shift"},
 	{0x1202,"Jup"},
 	{0x120C,"Jdown"},
 	{0x1218,"Jleft"},
@@ -247,26 +266,51 @@ struct nativeCommand NativeCommand[]=
 	{0x1280,"Clear Key"},
 	{0x1290,"Wait Key"},
 	{0x129E,"Wait"},
+	{0x12AA,"Key$"},
 	{0x12CE,"Timer"},
 	{0x12DA,"Wind Open"},
 	{0x12F4,"Wind Open"},	// Wind Open n,n, n,n, n,n
+	{0x131A,"Wind Close"},
+	{0x132A,"Wind Save"},
+	{0x133A,"Wind Move"},
+	{0x134C,"Wind Size"},
 	{0x1378,"Locate"},
 	{0x1388,"Clw"},
 	{0x1392,"Home"},
+	{0x139C,"Curs Pen"},
+	{0x13AC,"Pen$"},
+	{0x13B8,"Paper$"},
 	{0x13C6,"At"},
 	{0x13D2,"Pen"},
 	{0x13DC,"Paper"},
 	{0x13E8,"Centre"},
+	{0x13F6,"Border"},
+	{0x1408,"Writing"},
+	{0x1422,"Title Top"},
+	{0x1432,"Title Bottom"},
 	{0x1446,"Curs Off"},
 	{0x1454,"Curs On"},
 	{0x1462,"Inverse Off"},
 	{0x1474,"Inverse On"},
-	{0x1534,"Cleft"},
-	{0x158A,"Cline"},
+	{0x1484,"Under Off"},
+	{0x1494,"Under On"},
+	{0x14A2,"Shade Off"},
+	{0x14B2,"Shade On"},
 	{0x14C0,"Scroll Off"},
 	{0x14E0,"Scroll"},
+	{0x1504,"Cleft$"},
+	{0x151E,"Cup"},
+	{0x1528,"Cdown"},
+	{0x1534,"Cleft"},
+	{0x1540,"Cright"},
+	{0x154C,"Memorize X"},
+	{0x155C,"Memorize Y"},
 	{0x157C,"Cmove"},
+	{0x158A,"Cline"},
+	{0x159E,"Hscroll"},
 	{0x15AC,"Vscroll"},
+	{0x15BA,"Set Tab"},
+	{0x15C8,"Set Curs"},
 	{0x15E6,"X Curs"},			// x=X Curs
 	{0x15F2,"Y Curs"},			// y=Y Curs
 	{0x161E,"Xgr"},			// Xgr
@@ -288,6 +332,7 @@ struct nativeCommand NativeCommand[]=
 	{0x173E,"Dir Next$"},
 	{0x174E,"Exist"},
 	{0x175A,"Dir$"},
+	{0x17A4,"Dir"},
 	{0x17B6,"Set Dir"},
 	{0x17C4,"Set Dir"},		// Set Dir num,fliter$
 	{0x17D4,"Load Iff"},	// Load Iff name,num
@@ -324,6 +369,8 @@ struct nativeCommand NativeCommand[]=
 	{0x1A94,"Sprite"},			// Sprite n,n,n,n
 	{0x1AA8,"Bob Off"},
 	{0x1AB6,"Bob Off"},		// Bob Off n
+	{0x1ABE,"Bob Update Off"},
+	{0x1B5C,"Limit Bob"},		// Limit Bob	n,x,y To x,y
 	{0x1B7A,"Limit Bob"},		// Limit Bob	n,x,y To x,y
 	{0x1B8A,"Set Bob"},		// Set Bob n,n,n,n
 	{0x1B9E,"Bob"},
@@ -337,11 +384,15 @@ struct nativeCommand NativeCommand[]=
 	{0x1C88,"Ins Bob"},
 	{0x1CA6,"Get Icon Palette"},
 	{0x1CC6,"Get Icon"},		// Get Icon n,x,y To x,y
+	{0x1CF0,"Put Bob"},		// Put Bob n
 	{0x1CFE,"Paste Bob"},
 	{0x1D12,"Paste Icon"},		// Paste Icon n,n,n
 	{0x1D28,"Reserve Zone"},	// Reserve Zone n
+	{0x1D40,"No Mask"},
+	{0x1D90,"Hot Spot"},		// Hot Spot x,y
 	{0x1DA2,"Hot Spot"},
 	{0x1DAE,"Priority On"},
+	{0x1DC0,"Priority Off"},
 	{0x1DD2,"Hide On"},
 	{0x1DE0,"Hide"},
 	{0x1DEA,"Show On"},
@@ -394,7 +445,9 @@ struct nativeCommand NativeCommand[]=
 	{0x2218,"Bclr"},
 	{0x2226,"Bchg"},
 	{0x2234,"Btst"},
-	{0x2288,"Rol.l"},		// Rol.l	n,n
+	{0x2242,"Ror.b"},		// Ror.b	n,a
+	{0x226C,"Rol.b"},		// Rol.b	n,a
+	{0x2288,"Rol.l"},		// Rol.l	n,a
 	{0x2296,"Areg"},
 	{0x22A2,"Dreg"},
 	{0x2394,"Prun"},
@@ -403,10 +456,15 @@ struct nativeCommand NativeCommand[]=
 	{0x23C4,"System"},
 	{0x23D0,"Multi Wait"},
 	{0x23E0,"I Bob"},
+	{0x23FC,"Priority Reverse On"},
+	{0x2416,"Priority Reverse Off"},
 	{0x2430,"Dev First$"},
 	{0x2442,"Dev Next$"},
 	{0x2452,"Hrev Block"},	// Hrev Block n
 	{0x2464,"Vrev Block"},	// Vrev Block n
+	{0x2476,"Hrev"},		// =Hrev(n)
+	{0x2482,"Vrev"},		// =Vrev(n)
+	{0x248E,"Rev"},
 	{0x2498,"Bank Swap"},
 	{0x24AA,"Amos To Front"},
 	{0x24BE,"Amos To Back "},
