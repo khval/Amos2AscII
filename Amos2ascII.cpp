@@ -66,7 +66,7 @@ BOOL token_reader( FILE *fd, unsigned short lastToken, unsigned short token, uns
 void cmdExtensionCommand(FILE *fd,char *ptr)
 {
 	struct extensionCommand *e = (struct extensionCommand *) ptr;
-	printf("Command_%x_%x ", e->extention_number, e->ExtentionTokenTable);
+	printf("Command_%d_%x", e->extention_number, e->ExtentionTokenTable);
 }
 
 void cmdRem(FILE *fd, char *ptr)
