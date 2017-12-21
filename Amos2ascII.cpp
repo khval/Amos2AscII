@@ -3,12 +3,26 @@
 #include <string.h>
 #include <math.h>
 #include <proto/exec.h>
+#include <proto/amosextension.h>
 #include "nativeCommands.h"
 #include "startup.h"
 #include "amos2ascii.h"
 
-struct Library 			 *AslBase = NULL;
-struct AslIFace 		 *IAsl = NULL;
+extern struct Library 			 *AmosExtensionBase ;
+extern struct AmosExtensionIFace	 *IAmosExtension ;
+
+extern struct Library 		 *AslBase ;
+extern struct AslIFace 		 *IAsl ;
+
+extern char *ST_str[STMX];
+
+extern void load_config( const char *name );
+extern BOOL init();
+extern void closedown();
+
+#define extensions_max 27
+
+struct extension *extensions[extensions_max];
 
 int token_is = is_newline;
 int last_token_is = is_newline;
@@ -66,7 +80,24 @@ BOOL token_reader( FILE *fd, unsigned short lastToken, unsigned short token, uns
 void cmdExtensionCommand(FILE *fd,char *ptr)
 {
 	struct extensionCommand *e = (struct extensionCommand *) ptr;
-	printf("Command_%d_%x", e->extention_number, e->ExtentionTokenTable);
+	struct TokenInfo *info;
+	BOOL found = FALSE;
+
+	if (extensions[e->extention_number])
+	{
+		info = GetCommandByToken(extensions[e->extention_number], e->ExtentionTokenTable);
+		if (info)
+		{
+			found = TRUE;
+			printf("%s", info -> command);
+			FreeTokenInfo(info);
+		}
+	}
+
+	if (found == FALSE)
+	{
+		printf("Command_%d_%x", e->extention_number, e->ExtentionTokenTable);
+	}
 }
 
 void cmdRem(FILE *fd, char *ptr)
@@ -512,28 +543,20 @@ void code_reader( FILE *fd, unsigned int  tokenlength)
 	}
 }
 
-bool init()
-{
-	if ( ! open_lib( "asl.library", 0L , "main", 1, &AslBase, (struct Interface **) &IAsl  ) ) return FALSE;
-	return TRUE;
-}
-
-void closedown()
-{
-	if (IAsl) DropInterface((struct Interface*) IAsl); IAsl = 0;
-	if (AslBase) CloseLibrary(AslBase); AslBase = 0;
-}
-
 int main( int args, char **arg )
 {
 	FILE *fd;
 	char amosid[17];
 	unsigned int tokenlength;
+	int n;
+	char buffer[100];
 
 	amosid[16] = 0;	// /0 string.
 
 	if (init())
 	{
+		for (n=0;n<STMX;n++) ST_str[n]=NULL;
+		for (n=0;n<extensions_max;n++) extensions[n]=NULL;
 
 		filename = get_filename(args,arg);
 
@@ -541,6 +564,18 @@ int main( int args, char **arg )
 
 		if (filename)
 		{
+			load_config("work:UAE-HD/Workbench/s/AMOSPro_Interpreter_Config");
+
+			for (n=14;n<14+extensions_max;n++)
+			{
+				if (ST_str[n]) if (ST_str[n][0]) 	{
+
+					sprintf(buffer,"AmosPro:APSystem/%s",ST_str[n]);
+					extensions[n-14] = OpenExtension(buffer);
+					printf("%02d: %s is%s loaded.\n",n -14, ST_str[n], extensions[n-14] ? "" : " NOT" );
+				}
+			}
+
 			fd = fopen(filename,"r");
 			if (fd)
 			{
@@ -551,6 +586,10 @@ int main( int args, char **arg )
 			}
 			free(filename);
 		}
+
+		for (n=0;n<STMX;n++) { if (ST_str[n]) free(ST_str[n]); ST_str[n] = NULL;}
+		for (n=0;n<extensions_max;n++) if (extensions[n]) CloseExtension(extensions[n]);
+
 		closedown();
 	}
 

@@ -10,7 +10,7 @@
 warnings = -wall -Wuninitialized
 
 
-main_objects = nativeCommands.cpp startup.cpp
+main_objects = nativeCommands.cpp startup.cpp init.cpp load_interpreter_config.cpp 
 main_SRCS = Amos2ascII.cpp
 
 objects = $(main_objects:.cpp=.o)

@@ -18,3 +18,5 @@ extern int token_is ;
 extern int last_token_is ;
 extern char space_after;
 
+#define STMX 64
+
