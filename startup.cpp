@@ -11,22 +11,6 @@
 #include <workbench/startup.h>
 #include <proto/asl.h>
 
-BOOL open_lib( const char *name, int ver , const char *iname, int iver, struct Library **base, struct Interface **interface)
-{
-	*interface = NULL;
-	*base = OpenLibrary( name , ver);
-	if (*base)
-	{
-		 *interface = GetInterface( *base,  iname , iver, TAG_END );
-		if (!*interface) printf("Unable to getInterface %s for %s %ld!\n",iname,name,ver);
-	}
-	else
-	{
-	   	printf("Unable to open the %s %ld!\n",name,ver);
-	}
-	return (*interface) ? TRUE : FALSE;
-}
-
 int32 SafeAddPart(char **oldPart, char *newPart)
 {
 	int32 success = 0;
