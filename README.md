@@ -15,3 +15,7 @@ Amos was good beginner's language; it feels like half of my life is in Amos. Thi
 Dependences
 -----------
 This program uses AmosExtension.library to obtain Command names from Amos extensions.
+
+Orginal source code can be found here:
+--------------------------------------
+https://github.com/khval/Amos2AscII
