@@ -77,33 +77,61 @@ BOOL token_reader( FILE *fd, unsigned short lastToken, unsigned short token, uns
 
 // etch special syntax and commands in AMOS need to be handled with care.
 
+
+char *getExtensionNameByToken( struct extension *ext, unsigned short token )
+{
+	char *str = NULL;
+	struct ExtensionDescriptor *ed;
+
+	for ( ed = FirstExtensionItem( ext ); ed ; ed = NextExtensionItem( ed ))
+	{
+		if (ed->tokenInfo.command) str = ed -> tokenInfo.command;
+
+		if ( ed -> tokenInfo.token == token )
+		{
+			return str ? strdup( (str[0]=='!' ? str+1 : str ) ) : NULL;
+		}
+	}
+	return NULL;
+}
+
 void cmdExtensionCommand(FILE *fd,char *ptr)
 {
 	struct extensionCommand *e = (struct extensionCommand *) ptr;
 	struct TokenInfo *info;
 	BOOL found = FALSE;
+	char *name = NULL;
 
 	if (extensions[e->extention_number])
 	{
-		info = GetCommandByToken(extensions[e->extention_number], e->ExtentionTokenTable);
+		info = GetCommandByToken( extensions[e->extention_number], e->ExtentionTokenTable );
 		if (info)
 		{
 			found = TRUE;
 
 			if (info -> command == NULL)
 			{
-				printf("Command_%d_[%s]_%x_found_no_name", 
-					e->extention_number, 
-					(ST_str[e->extention_number+14] ? ST_str[e->extention_number+14] : "") , 
-					e->ExtentionTokenTable);
+				// if name is not found we can try harder.
 
-				getchar();
+				if ( name = getExtensionNameByToken( extensions[e->extention_number], e->ExtentionTokenTable ))
+				{
+					printf("%s", name);
+					free( name);
+				}
+				else
+				{
+					printf("Command_%d_[%s]_%x_found_no_name", 
+						e->extention_number, 
+						(ST_str[e->extention_number+14] ? ST_str[e->extention_number+14] : "") , 
+						e->ExtentionTokenTable);
+
+					getchar();
+				}
 			}
 			else
 			{
 				printf("%s", info -> command);
 			}
-
 
 			FreeTokenInfo(info);
 		}
@@ -149,36 +177,51 @@ void cmdRem2(FILE *fd, char *ptr)
 
 void cmdCallProcedure(FILE *fd, char *ptr)
 {
+	int toU= 'A'-'a';
 	char buffer[100];
+	char *c;
 	struct reference *ref = (struct reference *) ptr;
 	int length2 = ref -> length + (ref -> length & 1);
 
 	fread(buffer, length2, 1, fd);
 	buffer[ ref -> length ] = 0;
+
+	for ( c=buffer; *c; c++ ) if ((*c>='a')&&(*c<='z')) *c+= toU;
+
 	printf("%s",buffer);
 }
 
 void cmdLabelOnLine(FILE *fd, char *ptr)
 {
+	int toU= 'A'-'a';
 	int what;
+	char *c;
 	char buffer[100];
 	struct reference *ref = (struct reference *) ptr;
 	int length2 = ref -> length + (ref -> length & 1);
 
 	fread(buffer, length2, 1, fd);
 	buffer[ ref -> length ] = 0;
+
+	for ( c=buffer; *c; c++ ) if ((*c>='a')&&(*c<='z')) *c+= toU;
+
 	printf("%s:",buffer);
 }
 
 void cmdLabel(FILE *fd, char *ptr)
 {
+	int toU= 'A'-'a';
 	int what;
+	char *c;
 	char buffer[100];
 	struct reference *ref = (struct reference *) ptr;
 	int length2 = ref -> length + (ref -> length & 1);
 
 	fread(buffer, length2, 1, fd);
 	buffer[ ref -> length ] = 0;
+
+	for ( c=buffer; *c; c++ ) if ((*c>='a')&&(*c<='z')) *c+= toU;
+
 	printf("%s",buffer);
 }
 
@@ -190,6 +233,8 @@ void cmdProcedure(FILE *fd, char *ptr)
 
 void cmdVar(FILE *fd, char *ptr)
 {
+	int toU= 'A'-'a';
+	char *c;
 	char buffer[100];
 	const char *type[]={"","#","$","?"};
 	struct reference *ref = (struct reference *) ptr;
@@ -201,6 +246,8 @@ void cmdVar(FILE *fd, char *ptr)
 
 	if (space_after ==' ') printf(" ");
 	space_after = 0;
+
+	for ( c=buffer; *c; c++ ) if ((*c>='a')&&(*c<='z')) *c+= toU;
 
 	printf("%s",buffer);
 	printf("%s",type[ref->flags&3] );
@@ -558,6 +605,15 @@ void code_reader( FILE *fd, unsigned int  tokenlength)
 	}
 }
 
+
+#define flag_ShowExtensions 1
+
+const char *sw[]=
+{
+	"--show-extensions",
+	NULL
+};
+
 int main( int args, char **arg )
 {
 	FILE *fd;
@@ -565,6 +621,38 @@ int main( int args, char **arg )
 	unsigned int tokenlength;
 	int n;
 	char buffer[100];
+	BOOL show_extension = FALSE;
+	ULONG flags = 0;
+	const char **s;
+	char *new_arg[100];
+	int new_args = 1;
+	BOOL is_arg;
+
+	if (args>50) return 0;
+
+	new_arg[0]=arg[0];
+	for (n=1;n<args;n++)
+	{
+		for (s=sw;*s;s++)
+		{
+			is_arg = FALSE;
+
+			if (strcasecmp(arg[n],*s)==0)
+			{
+				flags |= 1<<(n-1);
+				is_arg = TRUE;
+			}
+
+			if (is_arg == FALSE)
+			{
+				new_arg[new_args]=arg[n];
+				new_args++;
+			}
+		}
+	}
+	new_arg[new_args]=NULL;
+
+	printf("args %d - %d\n", args, new_args);
 
 	amosid[16] = 0;	// /0 string.
 
@@ -573,7 +661,7 @@ int main( int args, char **arg )
 		for (n=0;n<STMX;n++) ST_str[n]=NULL;
 		for (n=0;n<extensions_max;n++) extensions[n]=NULL;
 
-		filename = get_filename(args,arg);
+		filename = get_filename(new_args,new_arg);
 
 		if (!filename) filename = asl();
 
@@ -587,7 +675,11 @@ int main( int args, char **arg )
 
 					sprintf(buffer,"AmosPro:APSystem/%s",ST_str[n]);
 					extensions[n-14] = OpenExtension(buffer);
-					printf("%02d: %s is%s loaded.\n",n -14, ST_str[n], extensions[n-14] ? "" : " NOT" );
+
+					if (flags & flag_ShowExtensions) 
+					{
+						printf("%02d: %s is%s loaded.\n",n -14, ST_str[n], extensions[n-14] ? "" : " NOT" );
+					}
 				}
 			}
 
