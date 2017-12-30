@@ -89,7 +89,22 @@ void cmdExtensionCommand(FILE *fd,char *ptr)
 		if (info)
 		{
 			found = TRUE;
-			printf("%s", info -> command);
+
+			if (info -> command == NULL)
+			{
+				printf("Command_%d_[%s]_%x_found_no_name", 
+					e->extention_number, 
+					(ST_str[e->extention_number+14] ? ST_str[e->extention_number+14] : "") , 
+					e->ExtentionTokenTable);
+
+				getchar();
+			}
+			else
+			{
+				printf("%s", info -> command);
+			}
+
+
 			FreeTokenInfo(info);
 		}
 	}
