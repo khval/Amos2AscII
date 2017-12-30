@@ -169,8 +169,24 @@ struct nativeCommand NativeCommand[]=
 	{0x07A4,"Bank To Menu" },
 	{0x07B8,"Menu On"},
 	{0x07C6,"Menu Off"},
+	{0x07D4,"Menu Calc"},
+	{0x081E,"Set Menu"},
+	{0x0832,"X Menu"},
+	{0x0840,"Y Menu"},
 	{0x084E,"Menu Key"},
+	{0x0862,"Menu Bar"},
+	{0x0872,"Menu Line"},
+	{0x0882,"Menu Tline"},
+	{0x0894,"Menu Movable"},
+	{0x08A8,"Menu Static"},
+	{0x08BA,"Menu Item Movable"},
+	{0x08D2,"Menu Item Static"},
+	{0x08EA,"Menu Active"},
 	{0x08FC,"Menu Inactive"},
+	{0x0910,"Menu Separate"},
+	{0x0924,"Menu Link"},
+	{0x0934,"Menu Called"},
+	{0x0946,"Menu Once"},
 	{0x0956,"Menu Del"},
 	{0x0964,"Menu$"},
 	{0x0970,"Choice"},
@@ -199,7 +215,9 @@ struct nativeCommand NativeCommand[]=
 	{0x0B34,"Auto View On"},
 	{0x0B46,"Screen Base"},
 	{0x0B58,"Screen Width"},
+	{0x0B6c,"Screen Width"},
 	{0x0B74,"Screen Height"},
+	{0x0B88,"Screen Height"},
 	{0x0B90,"Get Palette"},
 	{0x0BAE,"Cls"},
 	{0x0BB8,"Cls"},
@@ -238,6 +256,7 @@ struct nativeCommand NativeCommand[]=
 	{0x0DF0,"Rain"},
 	{0x0DFE,"Fade"},
 	{0x0E08,"Phybase"},		// =Phybase(n)
+	{0x0E16,"Physic"},
 	{0x0E24,"Physic"},
 	{0x0E2C,"Autoback"},
 	{0x0E3C,"Plot"},
@@ -252,6 +271,7 @@ struct nativeCommand NativeCommand[]=
 	{0x0EC8,"Bar"},
 	{0x0ED8,"Box"},
 	{0x0EE8,"Paint"},
+	{0x0EF8,"Paint"},
 	{0x0F04,"Gr Locate"},
 	{0x0F16,"Text Length"},
 	{0x0F3A,"Text Base"},
@@ -260,6 +280,7 @@ struct nativeCommand NativeCommand[]=
 	{0x0F6A,"Set Paint"},
 	{0x0F7A,"Get Fonts"},
 	{0x0F8A,"Get Disc Fonts"},
+	{0x0F9E,"Get Rom Fonts"},
 	{0x0FB2,"Set Font"},
 	{0x0FC2,"Font$"},
 	{0x0FCE,"Hslider"},		// Hslider n,n To n,n,n,n,n
@@ -276,6 +297,11 @@ struct nativeCommand NativeCommand[]=
 	{0x10AC,"Set Tempras"},	// Set Tempras addr,length
 	{0x10B6,"Appear"},
 	{0x10D6,"Zoom"},
+	{0x10F4,"Get Cblock"},
+	{0x110E,"Put Cblock"},
+	{0x1120,"Put Cblock"},
+	{0x112C,"Del Cblock"},
+	{0x113E,"Del Cblock"},
 	{0x1146,"Get Block"},	// Get Block n,x.y.x.y
 	{0x1160,"Get Block"},	// Get Block n,x,y,x,y,n
 	{0x1172,"Put Block"},	// Put Block n
@@ -346,6 +372,8 @@ struct nativeCommand NativeCommand[]=
 	{0x15C8,"Set Curs"},
 	{0x15E6,"X Curs"},			// x=X Curs
 	{0x15F2,"Y Curs"},			// y=Y Curs
+	{0x15FE,"X Graphic"},
+	{0x160E,"Y Graphic"},
 	{0x161E,"Xgr"},			// Xgr
 	{0x1628,"Ygr"},			// Ygr
 	{0x1632,"Reserve Zone"},	// Reserve Zone n
@@ -397,6 +425,7 @@ struct nativeCommand NativeCommand[]=
 	{0x1978,"Fsel$"},
 	{0x1986,"Set Sprite Buffer"},
 	{0x199E,"Sprite Off"},
+	{0x19B0,"Sprite Off"},
 	{0x1A10,"Spritebob Col"},
 	{0x1A44,"Sprite Col"},	//	=Sprite Col( n,n To n )
 	{0x1A72,"Sprite Base"},
@@ -405,6 +434,8 @@ struct nativeCommand NativeCommand[]=
 	{0x1AA8,"Bob Off"},
 	{0x1AB6,"Bob Off"},		// Bob Off n
 	{0x1ABE,"Bob Update Off"},
+	{0x1AD2,"Bob Update On"},
+	{0x1AE6,"Bob Update"},
 	{0x1AF6,"Bob Clear"},
 	{0x1B06,"Bob Draw"},
 	{0x1B14,"Bobsprite Col"},	// Bobsprite Col(n,n To n)
@@ -581,6 +612,7 @@ struct nativeCommand NativeCommand[]=
 	{0x253C,"Command Line$"},
 	{0x2550,"Disc Info$"},
 	{0x2578,"Set Accessory"},
+	{0x258C,"@_apml_@"},
 	{0x259A,"Trap"},
 	{0x25C0,"Array"},
 	{0x25CC,"Frame Load"},
@@ -681,6 +713,7 @@ struct nativeCommand NativeCommand[]=
 	{0x2BC4,"Get Bob Palette" },
 	{0x2BCC,"Set Equate Bank" },
 	{0x2BE2,"Zdialog" },
+	{0xFF3E,"xor"},
 	{0xFF4C,"or"},
 	{0xFF58,"and"},
 	{0xFFD4,"mod"}
