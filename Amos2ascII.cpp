@@ -77,23 +77,32 @@ BOOL token_reader( FILE *fd, unsigned short lastToken, unsigned short token, uns
 
 // etch special syntax and commands in AMOS need to be handled with care.
 
-
-char *getExtensionNameByToken( struct extension *ext, unsigned short token )
+void Capitalize(char *str)
 {
-	char *str = NULL;
-	struct ExtensionDescriptor *ed;
+	int n;
+	char c,lc;
+	int upper = 'A'-'a';
 
-	for ( ed = FirstExtensionItem( ext ); ed ; ed = NextExtensionItem( ed ))
+	for (n=0;str[n];n++)
 	{
-		if (ed->tokenInfo.command) str = ed -> tokenInfo.command;
+		c = str[n];
 
-		if ( ed -> tokenInfo.token == token )
+		if (n==0)
 		{
-			return str ? strdup( (str[0]=='!' ? str+1 : str ) ) : NULL;
+			str[n] = ((c>='a')  && (c <= 'z')) ? c+upper : c;
+		}
+		else if (n>0)
+		{
+			lc = str[n-1];
+
+			if ((lc==' ')||(lc=='!'))
+			{
+				str[n] = ((c>='a')  && (c <= 'z')) ? c+upper : c;
+			}
 		}
 	}
-	return NULL;
 }
+
 
 void cmdExtensionCommand(FILE *fd,char *ptr)
 {
@@ -113,9 +122,10 @@ void cmdExtensionCommand(FILE *fd,char *ptr)
 			{
 				// if name is not found we can try harder.
 
-				if ( name = getExtensionNameByToken( extensions[e->extention_number], e->ExtentionTokenTable ))
+				if ( name = GetExtensionNameByToken( extensions[e->extention_number], e->ExtentionTokenTable ))
 				{
-					printf("%s", name);
+					Capitalize(name);
+					printf("%s", name);		// should be formated before
 					free( name);
 				}
 				else
@@ -130,7 +140,15 @@ void cmdExtensionCommand(FILE *fd,char *ptr)
 			}
 			else
 			{
-				printf("%s", info -> command);
+				char *name = strdup( info -> command[0]=='!' ? info -> command+1 : info -> command );
+
+				if (name)
+				{
+					Capitalize(name);
+					printf("%s",name);
+					free(name);
+				}
+				else	printf("%s", info -> command[0]=='!' ? info -> command+1 : info -> command );
 			}
 
 			FreeTokenInfo(info);
@@ -651,8 +669,6 @@ int main( int args, char **arg )
 		}
 	}
 	new_arg[new_args]=NULL;
-
-	printf("args %d - %d\n", args, new_args);
 
 	amosid[16] = 0;	// /0 string.
 
