@@ -14,4 +14,4 @@ Amos was good beginner's language; it feels like half of my life is in Amos. Thi
 
 Dependences
 -----------
-This program uses AmosExtension.library obtain Command names from Amos extensions.
+This program uses AmosExtension.library to obtain Command names from Amos extensions.
