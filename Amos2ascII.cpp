@@ -31,6 +31,8 @@ int tokenCnt = 0;
 int symbolCnt = 0;
 int linenumber = 0;
 
+ULONG flags = 0;
+
 char *filename = NULL;
 
 BOOL equal_symbol = FALSE;
@@ -699,8 +701,7 @@ BOOL try_config( const char *path, char *config_name)
 
 	config_full_name = safe_addpart( (char *) path, config_name );
 
-	printf("try: '%s'\n", config_full_name);
-
+	if (flags & flag_verbose) printf("try: '%s'\n", config_full_name);
 
 	if (config_full_name)
 	{
@@ -750,7 +751,6 @@ int main( int args, char **arg )
 	int n;
 	char buffer[100];
 	BOOL show_extension = FALSE;
-	ULONG flags = 0;
 	const char **s;
 	char *new_arg[100];
 	int new_args = 1;
@@ -813,7 +813,7 @@ int main( int args, char **arg )
 					sprintf(buffer,"AmosPro:APSystem/%s",ST_str[n]);
 					extensions[n-14] = OpenExtension(buffer);
 
-					if (flags & flag_ShowExtensions) 
+					if ((flags & flag_ShowExtensions) || (flags & flag_verbose))
 					{
 						printf("%02d: %s is%s loaded.\n",n -14, ST_str[n], extensions[n-14] ? "" : " NOT" );
 					}
