@@ -3,14 +3,15 @@
 #include <stdlib.h>
 #include <string.h>
 #include <string>
-#include "Amos2ascII.h"
+#include <math.h>
+#include <proto/exec.h>
+#include "load_interpreter_config.h"
 
 #define cmpID( a, b ) (*((int *) a) == *((int *) ((void *) b)))
 #define Leek( adr )	*((int *) (adr))
 #define Peek( adr ) *((char *) (adr))
 #define Peek_str( adr, n ) strndup( adr , n )
 
-extern void load_config(char *name);
 
 char *ST_str[STMX];
 
@@ -44,11 +45,12 @@ void process_load( char *mem )
 	} 
 }
 
-void load_config( const char *name )
+BOOL load_config( const char *name )
 {
 	FILE *fd;
 	size_t filesize;
 	char *bank;
+	BOOL ret = FALSE;
 
 	fd = fopen(name,"r");
 	if (fd)
@@ -65,10 +67,13 @@ void load_config( const char *name )
 			{
 				process_load( bank );
 			}
+
+			ret = TRUE;
 			free(bank);
 		}
 
 		fclose(fd);
 	}
+	return ret;
 }
 
