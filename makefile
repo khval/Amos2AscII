@@ -1,4 +1,7 @@
 
+# Version to build
+VERSION = 1
+
 #CC     = $(CROSS_COMPILE)gcc 
 #CXX    = $(CROSS_COMPILE)c++ 
 #AS     = $(CROSS_COMPILE)as 
@@ -26,3 +29,7 @@ all:	 $(programs) $(objects)
 
 clean:
 	delete $(programs) $(objects)
+
+.PHONY: revision 
+revision:
+	bumprev $(VERSION) $(programs)
