@@ -12,6 +12,7 @@
 #define Peek( adr ) *((char *) (adr))
 #define Peek_str( adr, n ) strndup( adr , n )
 
+const char *config_name = "AMOSPro_Interpreter_Config";
 
 char *ST_str[STMX];
 
