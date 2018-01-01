@@ -1,4 +1,7 @@
 
+#ifndef amos2ascii_h
+#define amos2ascii_h
+
 // enums are used to format text, by know the last command we know if need a space or not between,
 
 enum
@@ -17,6 +20,4 @@ enum
 extern int token_is ;
 extern int last_token_is ;
 extern char space_after;
-
-#define STMX 64
-
+#endif
