@@ -7,6 +7,7 @@
 #include "nativeCommands.h"
 #include "startup.h"
 #include "amos2ascii.h"
+#include "load_interpreter_config.h"
 
 extern struct Library 			 *AmosExtensionBase ;
 extern struct AmosExtensionIFace	 *IAmosExtension ;
@@ -14,13 +15,8 @@ extern struct AmosExtensionIFace	 *IAmosExtension ;
 extern struct Library 		 *AslBase ;
 extern struct AslIFace 		 *IAsl ;
 
-extern char *ST_str[STMX];
-
-extern void load_config( const char *name );
 extern BOOL init();
 extern void closedown();
-
-#define extensions_max 27
 
 struct extension *extensions[extensions_max];
 
@@ -631,6 +627,54 @@ const char *sw[]=
 	"--show-extensions",
 	NULL
 };
+
+char *get_path(char *name)
+{
+	char *path;
+	int nlen = strlen(name);
+	int n;
+
+	for (n=nlen-1; n>0; n--)
+	{
+		if ((name[n]==':')||(name[n]=='/'))
+		{
+			return strndup(name,n);
+		}
+	}
+
+	return NULL;
+}
+
+// not unlike AmigaDOS addpart, but we don't play with static buffer sizes, thats too unsafe.
+// we don't care about Unix / Linux paths, so don't try to decode into AmigaOS.
+
+char *safe_addpart(char *path, char *name)
+{
+	if ( (path) && (name) )
+	{
+		int size;
+		int pl = strlen(path);
+		char *newname;
+		BOOL has_divider = TRUE;		// if path is "" then we don't add a divider
+
+		if (pl>0) has_divider = ((path[pl-1] == '/') || (path[pl-1] == ':')) ? TRUE : FALSE;
+
+		size = pl + strlen(name) + 2;		// one extra for divider, one extra for \0 = two extra
+		newname = (char *) malloc( size );
+		if (newname)
+		{
+			sprintf(newname,"%s%s%s", path,has_divider ? "" : "/", name);
+			return newname;
+		}		
+	}
+
+	if ( (path == NULL) && (name) )	// we don't have path, so we do normal strdup().
+	{
+		return strdup(name);
+	}
+
+	return NULL;
+}
 
 int main( int args, char **arg )
 {
