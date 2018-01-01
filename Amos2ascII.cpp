@@ -9,6 +9,9 @@
 #include "amos2ascii.h"
 #include "load_interpreter_config.h"
 
+#include "Amos2ascii.exe_rev.h"
+STRPTR USED ver = (STRPTR) VERSTAG;
+
 extern struct Library 			 *AmosExtensionBase ;
 extern struct AmosExtensionIFace	 *IAmosExtension ;
 
@@ -620,13 +623,24 @@ void code_reader( FILE *fd, unsigned int  tokenlength)
 }
 
 
-#define flag_ShowExtensions 1
+#define flag_verbose 1
+#define flag_ShowExtensions 2
+#define flag_help 4
 
 const char *sw[]=
 {
+	"--verbose",
 	"--show-extensions",
+	"--help",
 	NULL
 };
+
+void show_help()
+{
+	printf("%s\n",VSTRING);
+	printf("--verbose\n\n\tShow extra details\n\n");
+	printf("--show-extensions\n\n\tShow loaded extensions\n\n");
+}
 
 char *get_path(char *name)
 {
@@ -676,6 +690,58 @@ char *safe_addpart(char *path, char *name)
 	return NULL;
 }
 
+
+BOOL try_config( const char *path, char *config_name)
+{
+	BOOL config_loaded = FALSE;
+
+	char *config_full_name = NULL;
+
+	config_full_name = safe_addpart( (char *) path, config_name );
+
+	printf("try: '%s'\n", config_full_name);
+
+
+	if (config_full_name)
+	{
+		config_loaded = load_config(config_full_name);
+		free(config_full_name);
+	}
+
+	return config_loaded;
+}
+
+
+BOOL load_config_try_paths( char *filename)
+{
+	BOOL config_loaded = FALSE;
+	const char **path;
+	char *_path;	// tmp path
+	const char *paths[] =
+		{
+			"amospro:s",
+			"s:",
+			"progdir:",
+			NULL,
+		};
+
+	_path = get_path( filename );
+	if (_path)
+	{
+		config_loaded = try_config( _path,  (char *) config_name);
+		free(_path);
+	}
+
+	path = paths;
+	while ((config_loaded == FALSE)&&(*path))
+	{
+		config_loaded = try_config( *path,  (char *) config_name);
+		path++;
+	}
+
+	return config_loaded;
+}
+
 int main( int args, char **arg )
 {
 	FILE *fd;
@@ -690,29 +756,39 @@ int main( int args, char **arg )
 	int new_args = 1;
 	BOOL is_arg;
 
+
 	if (args>50) return 0;
 
 	new_arg[0]=arg[0];
 	for (n=1;n<args;n++)
 	{
+		is_arg = FALSE;
+
 		for (s=sw;*s;s++)
 		{
-			is_arg = FALSE;
-
 			if (strcasecmp(arg[n],*s)==0)
 			{
-				flags |= 1<<(n-1);
+				flags |= 1<<((int) (s-sw));
 				is_arg = TRUE;
+				break;
 			}
+		}
 
-			if (is_arg == FALSE)
-			{
-				new_arg[new_args]=arg[n];
-				new_args++;
-			}
+		if (is_arg == FALSE)
+		{
+			printf("%s\n", arg[n]);
+
+			new_arg[new_args]=arg[n];
+			new_args++;
 		}
 	}
 	new_arg[new_args]=NULL;
+
+	if (flags & flag_help)
+	{
+		show_help();
+		return 0;
+	}
 
 	amosid[16] = 0;	// /0 string.
 
@@ -727,7 +803,8 @@ int main( int args, char **arg )
 
 		if (filename)
 		{
-			load_config("work:UAE-HD/Workbench/s/AMOSPro_Interpreter_Config");
+			char *path;
+			BOOL config_loaded = load_config_try_paths( filename );
 
 			for (n=14;n<14+extensions_max;n++)
 			{
@@ -752,6 +829,11 @@ int main( int args, char **arg )
 				fclose(fd);
 			}
 			free(filename);
+
+			if (config_loaded == FALSE)
+			{
+				printf("ERROR: config file not loaded\n");
+			}
 		}
 
 		for (n=0;n<STMX;n++) { if (ST_str[n]) free(ST_str[n]); ST_str[n] = NULL;}
@@ -759,6 +841,7 @@ int main( int args, char **arg )
 
 		closedown();
 	}
+
 
 	return 0;
 }
