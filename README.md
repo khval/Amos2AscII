@@ -20,10 +20,10 @@ This program uses AmosExtension.library to obtain Command names from Amos extens
 
 program will try to read config file from this paths, in this coder.
 
-<path to .amos file>/AMOSPro_Interpreter_Config
-amospro:s/AMOSPro_Interpreter_Config
-s:AMOSPro_Interpreter_Config
-progdir:AMOSPro_Interpreter_Config
+1. <path to .amos file>/AMOSPro_Interpreter_Config
+2. amospro:s/AMOSPro_Interpreter_Config
+3. s:AMOSPro_Interpreter_Config
+4. progdir:AMOSPro_Interpreter_Config
 
 program will try the next until it find it.
 
