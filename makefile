@@ -20,10 +20,10 @@ objects = $(main_objects:.cpp=.o)
 programs= $(main_SRCS:.cpp=.exe)
 
 %.o:		%.cpp 
-	gcc $(warnings) -c -O2 -D__USE_INLINE__ $(@:.o=.cpp) -o $@
+	g++ $(warnings) -c -O2 -D__USE_INLINE__ $(@:.o=.cpp) -o $@
 
 %.exe:		%.cpp $(objects)
-	gcc $(warnings) -O2 -D__USE_INLINE__ $(@:.exe=.cpp) $(objects) -o $@
+	g++ $(warnings) -O2 -D__USE_INLINE__ $(@:.exe=.cpp) $(objects) -o $@
 
 all:	 $(programs) $(objects)
 
