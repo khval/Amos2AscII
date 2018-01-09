@@ -2,24 +2,18 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <string>
+
 #include <proto/exec.h>
 #include <proto/amosextension.h>
 #include "nativeCommands.h"
+#include "init.h"
 #include "startup.h"
 #include "amos2ascii.h"
 #include "load_interpreter_config.h"
 
 #include "Amos2ascii.exe_rev.h"
 STRPTR USED ver = (STRPTR) VERSTAG;
-
-extern struct Library 			 *AmosExtensionBase ;
-extern struct AmosExtensionIFace	 *IAmosExtension ;
-
-extern struct Library 		 *AslBase ;
-extern struct AslIFace 		 *IAsl ;
-
-extern BOOL init();
-extern void closedown();
 
 struct extension *extensions[extensions_max];
 
@@ -38,6 +32,28 @@ char *filename = NULL;
 BOOL equal_symbol = FALSE;
 
 char space_after = 0;
+
+#define flag_verbose 1
+#define flag_ShowExtensions 2
+#define flag_help 4
+#define flag_ShowTokens 8
+
+const char *sw[]=
+{
+	"--verbose",
+	"--show-extensions",
+	"--help",
+	"--show-tokens",
+	NULL
+};
+
+void show_help()
+{
+	printf("%s\n",VSTRING);
+	printf("--verbose\n\n\tShow extra details\n\n");
+	printf("--show-extensions\n\n\tShow loaded extensions\n\n");
+	printf("--show-tokens\n\n\tShow tokens on the next line\n\n");
+}
 
 // structs are used read chunks of the AMOS file, so they need to be packed.
 
@@ -607,17 +623,40 @@ BOOL token_reader( FILE *fd, unsigned short lastToken, unsigned short token, uns
 	return FALSE;
 }
 
+std::string token_line_buffer;
+
+void write_token_line_dump(int TokenNumber)
+{
+	char tmp[100];
+
+	if (TokenNumber == 0)
+	{
+		printf("%s\n",token_line_buffer.c_str());
+		token_line_buffer="";
+	}
+	else
+	{
+		sprintf(tmp,"%04X",TokenNumber);
+
+		token_line_buffer+="<";
+		token_line_buffer+=tmp;
+		token_line_buffer+="> ";
+	}
+}
+
 void code_reader( FILE *fd, unsigned int  tokenlength)
 {
 	struct tokenStart TokenStart;
 	unsigned short LastTokenNumber=0;
 	unsigned short TokenNumber;
 
+	// read the agument of token, file don't not start with token.
 	token_reader(fd, 0, 0 , tokenlength);	// new line
-
 	fread( &TokenNumber, 2, 1, fd );
 	while (token_reader( fd, LastTokenNumber, TokenNumber, tokenlength ))
 	{
+		if (flags & flag_ShowTokens)	write_token_line_dump(TokenNumber);
+
 		LastTokenNumber = TokenNumber;
 		last_token_is = token_is;
 		fread( &TokenNumber, 2, 1, fd );	// next;
@@ -625,24 +664,7 @@ void code_reader( FILE *fd, unsigned int  tokenlength)
 }
 
 
-#define flag_verbose 1
-#define flag_ShowExtensions 2
-#define flag_help 4
 
-const char *sw[]=
-{
-	"--verbose",
-	"--show-extensions",
-	"--help",
-	NULL
-};
-
-void show_help()
-{
-	printf("%s\n",VSTRING);
-	printf("--verbose\n\n\tShow extra details\n\n");
-	printf("--show-extensions\n\n\tShow loaded extensions\n\n");
-}
 
 char *get_path(char *name)
 {
