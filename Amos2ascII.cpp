@@ -460,13 +460,25 @@ void cmdDivider(FILE *fd,char *ptr)
 	printf(": ");
 }
 
+
+int global_level = 0;
+
+void printLevel()
+{
+	int n;
+	for (n=1;n<global_level;n++) printf(" ");
+	global_level = 0;
+}
+
 void cmdNewLine(FILE *fd,char *ptr)
 {
 	int n;
 	struct tokenStart *TokenStart = (struct tokenStart *) ptr;
 	linenumber++;
 	printf("\n");
-	for (n=1;n<TokenStart->level;n++) printf(" ");
+
+	global_level = TokenStart->level;
+
 	commandCnt = 0;
 	space_after = 0;
 }
@@ -648,23 +660,24 @@ void code_reader( FILE *fd, unsigned int  tokenlength)
 {
 	struct tokenStart TokenStart;
 	unsigned short LastTokenNumber=0;
-	unsigned short TokenNumber;
+	unsigned short TokenNumber = 0;
 
 	// read the agument of token, file don't not start with token.
 	token_reader(fd, 0, 0 , tokenlength);	// new line
-	fread( &TokenNumber, 2, 1, fd );
+	printLevel();
+
+	fread( &TokenNumber, 2, 1, fd );	// next;
+
 	while (token_reader( fd, LastTokenNumber, TokenNumber, tokenlength ))
 	{
 		if (flags & flag_ShowTokens)	write_token_line_dump(TokenNumber);
+		if (TokenNumber == 0) printLevel();
 
 		LastTokenNumber = TokenNumber;
 		last_token_is = token_is;
 		fread( &TokenNumber, 2, 1, fd );	// next;
 	}
 }
-
-
-
 
 char *get_path(char *name)
 {
@@ -770,6 +783,7 @@ int main( int args, char **arg )
 	FILE *fd;
 	char amosid[17];
 	unsigned int tokenlength;
+	unsigned int _length;
 	int n;
 	char buffer[100];
 	BOOL show_extension = FALSE;
@@ -847,6 +861,7 @@ int main( int args, char **arg )
 			{
 				fread( amosid, 16, 1, fd );
 				fread( &tokenlength, 4, 1, fd );
+//				fread( &_length, 2, 1, fd );
 				code_reader( fd, tokenlength );
 				fclose(fd);
 			}
