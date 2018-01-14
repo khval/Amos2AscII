@@ -6,6 +6,9 @@
 #include <math.h>
 #include <proto/exec.h>
 #include "load_interpreter_config.h"
+#include "argflags.h" 
+
+extern ULONG flags;
 
 #define cmpID( a, b ) (*((int *) a) == *((int *) ((void *) b)))
 #define Leek( adr )	*((int *) (adr))
@@ -76,5 +79,99 @@ BOOL load_config( const char *name )
 		fclose(fd);
 	}
 	return ret;
+}
+
+char *get_path(char *name)
+{
+	char *path;
+	int nlen = strlen(name);
+	int n;
+
+	for (n=nlen-1; n>0; n--)
+	{
+		if ((name[n]==':')||(name[n]=='/'))
+		{
+			return strndup(name,n);
+		}
+	}
+
+	return NULL;
+}
+
+char *safe_addpart(char *path, char *name)
+{
+	if ( (path) && (name) )
+	{
+		int size;
+		int pl = strlen(path);
+		char *newname;
+		BOOL has_divider = TRUE;		// if path is "" then we don't add a divider
+
+		if (pl>0) has_divider = ((path[pl-1] == '/') || (path[pl-1] == ':')) ? TRUE : FALSE;
+
+		size = pl + strlen(name) + 2;		// one extra for divider, one extra for \0 = two extra
+		newname = (char *) malloc( size );
+		if (newname)
+		{
+			sprintf(newname,"%s%s%s", path,has_divider ? "" : "/", name);
+			return newname;
+		}		
+	}
+
+	if ( (path == NULL) && (name) )	// we don't have path, so we do normal strdup().
+	{
+		return strdup(name);
+	}
+
+	return NULL;
+}
+
+BOOL try_config( const char *path, char *config_name)
+{
+	BOOL config_loaded = FALSE;
+
+	char *config_full_name = NULL;
+
+	config_full_name = safe_addpart( (char *) path, config_name );
+
+	if (flags & flag_verbose) printf("try: '%s'\n", config_full_name);
+
+	if (config_full_name)
+	{
+		config_loaded = load_config(config_full_name);
+		free(config_full_name);
+	}
+
+	return config_loaded;
+}
+
+BOOL load_config_try_paths( char *filename)
+{
+	BOOL config_loaded = FALSE;
+	const char **path;
+	char *_path;	// tmp path
+	const char *paths[] =
+		{
+			"amospro:s",
+			"s:",
+			"progdir:",
+			NULL,
+		};
+
+	_path = get_path( filename );
+	if (_path)
+	{
+		config_loaded = try_config( _path,  (char *) config_name);
+		free(_path);
+	}
+
+	path = paths;
+	while ((config_loaded == FALSE)&&(*path))
+	{
+		config_loaded = try_config( *path,  (char *) config_name);
+		path++;
+	}
+
+	return config_loaded;
 }
 
