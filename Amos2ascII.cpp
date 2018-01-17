@@ -18,6 +18,10 @@ STRPTR USED ver = (STRPTR) VERSTAG;
 
 struct extension *extensions[extensions_max];
 
+void write_token_line_dump(int TokenNumber);
+
+std::string token_line_buffer;
+
 int token_is = is_newline;
 int last_token_is = is_newline;
 
@@ -123,48 +127,30 @@ void cmdExtensionCommand(FILE *fd,char *ptr)
 	struct TokenInfo *info;
 	BOOL found = FALSE;
 	char *name = NULL;
+	char buf[100];
 
 	if (extensions[e->extention_number])
 	{
-		info = GetCommandByToken( extensions[e->extention_number], e->ExtentionTokenTable );
-		if (info)
+		if ( name = GetExtensionNameByToken( extensions[e->extention_number], e->ExtentionTokenTable ))
 		{
 			found = TRUE;
 
-			if (info -> command == NULL)
-			{
-				// if name is not found we can try harder.
+			sprintf(buf,"[%08x]", *((int *) e));
 
-				if ( name = GetExtensionNameByToken( extensions[e->extention_number], e->ExtentionTokenTable ))
-				{
-					Capitalize(name);
-					printf("%s", name);		// should be formated before
-					free( name);
-				}
-				else
-				{
-					printf("Command_%d_[%s]_%x_found_no_name", 
-						e->extention_number, 
-						(ST_str[e->extention_number+14] ? ST_str[e->extention_number+14] : "") , 
-						e->ExtentionTokenTable);
+			token_line_buffer+="*";
+			token_line_buffer+=buf;
+			token_line_buffer+="* ";
 
-					getchar();
-				}
-			}
-			else
-			{
-				char *name = strdup( info -> command[0]=='!' ? info -> command+1 : info -> command );
-
-				if (name)
-				{
-					Capitalize(name);
-					printf("%s",name);
-					free(name);
-				}
-				else	printf("%s", info -> command[0]=='!' ? info -> command+1 : info -> command );
-			}
-
-			FreeTokenInfo(info);
+			Capitalize(name);
+			printf("%s", name);		// should be formated before
+			free( name);
+		}
+		else
+		{
+			printf("Command_%d_[%s]_%x_found_no_name", 
+				e->extention_number, 
+				(ST_str[e->extention_number+14] ? ST_str[e->extention_number+14] : "") , 
+				e->ExtentionTokenTable);
 		}
 	}
 
@@ -624,6 +610,8 @@ BOOL token_reader( FILE *fd, unsigned short lastToken, unsigned short token, uns
 	}
 	else
 	{
+		printf("\n\n");
+		write_token_line_dump(0);
 		printf("\n\nERROR: Line %d, File pos %08X -- Token %04X not found\n",linenumber, ftell(fd), token );
 		printf("FILE: %s\n\n", filename);
 	}
@@ -631,7 +619,6 @@ BOOL token_reader( FILE *fd, unsigned short lastToken, unsigned short token, uns
 	return FALSE;
 }
 
-std::string token_line_buffer;
 
 void write_token_line_dump(int TokenNumber)
 {
@@ -639,7 +626,7 @@ void write_token_line_dump(int TokenNumber)
 
 	if (TokenNumber == 0)
 	{
-		printf("%s\n",token_line_buffer.c_str());
+		printf("token dump>  %s\n",token_line_buffer.c_str());
 		token_line_buffer="";
 	}
 	else
