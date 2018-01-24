@@ -558,6 +558,7 @@ BOOL token_reader( FILE *fd, unsigned short lastToken, unsigned short token, uns
 	char buffer[1024];
 	struct callTable *ptr;
 	int size;
+	int _type;
 
 	if (token == 0)
 	{
@@ -602,10 +603,12 @@ BOOL token_reader( FILE *fd, unsigned short lastToken, unsigned short token, uns
 		return TRUE;
 	}
 
-	if (findNativeCommand(lastToken, token))
+
+	_type = findNativeCommand(lastToken, token);
+	if (_type > -1)
 	{
 		commandCnt++;
-		token_is = is_command;
+		token_is = _type;
 		return TRUE;
 	}
 	else

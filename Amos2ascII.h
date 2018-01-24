@@ -8,6 +8,7 @@ enum
 {
 	is_newline = 0,
 	is_command,
+	is_command_with_hash,
 	is_symbol,
 	is_number,
 	is_string,

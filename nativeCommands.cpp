@@ -105,7 +105,7 @@ struct nativeCommand NativeCommand[]=
 	{0x048E,"Input$"},		//	=Input$(max)
 	{0x049C,"Input$"},
 	{0x04A6,"Using"},
-	{0x04B2,"Input"},
+	{0x04B2,"Input #"},
 	{0x04BE,"Line Input #" },
 	{0x04D0,"Input" },
 	{0x04DC,"Line Input" },
@@ -742,7 +742,7 @@ BOOL findSymbol(unsigned short token)
 
 
 
-BOOL findNativeCommand(unsigned short lastToken, unsigned short token)
+int findNativeCommand(unsigned short lastToken, unsigned short token)
 {
 	struct nativeCommand *ptr;
 	int size = sizeof(NativeCommand)/sizeof(struct nativeCommand);
@@ -751,6 +751,8 @@ BOOL findNativeCommand(unsigned short lastToken, unsigned short token)
 	{
 		if (token == ptr->id ) 
 		{
+			char last_symbol;
+
 			if (
 				(last_token_is==is_var)||
 				(last_token_is==is_label)||
@@ -760,12 +762,12 @@ BOOL findNativeCommand(unsigned short lastToken, unsigned short token)
 				(lastToken == 0x007C)				// symbol ")"
 			) printf(" ");
 
+			last_symbol = ptr -> name[strlen(ptr->name)-1];
+
 			printf("%s", ptr -> name);
 
-//			equal_symbol = FALSE;
-
-			return TRUE;
+			return last_symbol == '#' ? is_command_with_hash : is_command ;
 		}
 	}
-	return FALSE;
+	return -1;	// no command found
 }
