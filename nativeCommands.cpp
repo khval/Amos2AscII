@@ -199,7 +199,7 @@ struct nativeCommand NativeCommand[]=
 	{0x0A18,"Screen Display"},
 	{0x0A36,"Screen Offset"},
 	{0x0A4E,"Screen Size"},
-	{0x0A5E,"Screen Color"},
+	{0x0A5E,"Screen Colour"},
 	{0x0A72,"Screen To Front"},		// Screen To Front n
 	{0x0A88,"Screen To Front"},
 	{0x0A90,"Screen To Back"},		// No args
