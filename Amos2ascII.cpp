@@ -19,6 +19,7 @@ STRPTR USED ver = (STRPTR) VERSTAG;
 struct extension *extensions[extensions_max];
 
 void write_token_line_dump(int TokenNumber);
+void dump_data(char *data, int size);
 
 std::string token_line_buffer;
 
@@ -30,29 +31,110 @@ int tokenCnt = 0;
 int symbolCnt = 0;
 int linenumber = 0;
 
+int amos_filesize = 0;
+int abk_filesize = 0;
+
 ULONG flags = 0;
 
-char *filename = NULL;
+char *amos_filename = NULL;
+char *abk_filename = NULL;
 
 BOOL equal_symbol = FALSE;
 
 char space_after = 0;
 
-const char *sw[]=
+struct cli_arg
 {
-	"--verbose",
-	"--show-extensions",
-	"--help",
-	"--show-tokens",
-	NULL
+	const char *arg;
+	int flag;
+	int type;
+	void *data;
+};
+
+struct cli_arg arg_list[]=
+{
+	// flag options
+
+	{"--verbose",flag_verbose,0,NULL},
+	{"-v",flag_verbose,0,NULL},
+
+	{"--show-extensions",flag_ShowExtensions,0,NULL},
+	{"-e",flag_ShowExtensions,0,NULL},
+
+	{"--help",flag_help,0,NULL},
+	{"-h",flag_help,0,NULL},
+
+	{"--show-tokens",flag_ShowTokens,0,NULL},
+	{"-t",flag_ShowTokens,0,NULL},
+
+	{"--show-data",flag_ShowData,0,NULL},
+	{"-d",flag_ShowData,0,NULL},
+
+	// file options
+	{"FROM", 0, e_string, &amos_filename},
+	{"-s",0, e_string, &amos_filename},
+
+	{"--abk-out", 0, e_string, &abk_filename},
+	{"-a", 0, e_string, &abk_filename},
+
 };
 
 void show_help()
 {
 	printf("%s\n",VSTRING);
-	printf("--verbose\n\n\tShow extra details\n\n");
-	printf("--show-extensions\n\n\tShow loaded extensions\n\n");
-	printf("--show-tokens\n\n\tShow tokens on the next line\n\n");
+	printf("-v, --verbose\n\n\tShow extra details\n\n");
+	printf("-e, --show-extensions\n\n\tShow loaded extensions\n\n");
+	printf("-t, --show-tokens\n\n\tShow tokens on the next line\n\n");
+	printf("-d, --show-data\n\n\tShow tokens and data on the next line\n\n");
+	printf("-s,FROM\n");
+	printf("\tAMOS file to convert\n\n");
+	printf("-a,--abk-out");
+	printf("\tABK output file\n\n");
+}
+
+struct cli_arg *find_arg( char *str)
+{
+	struct cli_arg *arg;
+	int cnt=sizeof(arg_list) / sizeof(struct cli_arg);
+
+	for (arg = arg_list; arg < arg_list+cnt; arg++ )
+	{
+		if (strcasecmp(arg->arg,str)==0) return arg;
+	}
+	return NULL;
+}
+
+BOOL read_args(int args, char **arg)
+{
+	struct cli_arg *f;
+	int n;
+	flags = 0;
+
+	for (n=1; n<args;n++)
+	{
+		f = find_arg( arg[n] );
+
+		if (f)
+		{
+			if (f->flag) flags |= f-> flag;
+			if (f->data)
+			{
+				n++;
+				if (n<args)
+				{
+					switch (f->type)
+					{
+						case e_string:	
+							if (*((char **) f->data)) return FALSE;
+							*((char **) f->data) = strdup(arg[n]);
+					}
+				}
+			}
+		}
+		else return FALSE;
+	}
+
+	return TRUE;
 }
 
 // structs are used read chunks of the AMOS file, so they need to be packed.
@@ -589,7 +671,11 @@ BOOL token_reader( FILE *fd, unsigned short lastToken, unsigned short token, uns
 				(lastToken == 0x008C)		// symbol "]"
 			) printf(" ");
 
+			if ((token_is == is_commandDivider) && ( lastToken == 0x0012)) printf(" ");
+
 			if (ptr->fn) ptr->fn( fd, buffer );
+
+			dump_data(buffer, ptr -> size );
 
 			return TRUE;
 		} 
@@ -616,7 +702,7 @@ BOOL token_reader( FILE *fd, unsigned short lastToken, unsigned short token, uns
 		printf("\n\n");
 		write_token_line_dump(0);
 		printf("\n\nERROR: Line %d, File pos %08X -- Token %04X not found\n",linenumber, ftell(fd), token );
-		printf("FILE: %s\n\n", filename);
+		printf("FILE: %s\n\n", amos_filename);
 	}
 
 	return FALSE;
@@ -629,7 +715,7 @@ void write_token_line_dump(int TokenNumber)
 
 	if (TokenNumber == 0)
 	{
-		printf("token dump>  %s\n",token_line_buffer.c_str());
+		printf("\ntoken dump>  %s\n",token_line_buffer.c_str());
 		token_line_buffer="";
 	}
 	else
@@ -639,6 +725,26 @@ void write_token_line_dump(int TokenNumber)
 		token_line_buffer+="<";
 		token_line_buffer+=tmp;
 		token_line_buffer+="> ";
+	}
+}
+
+void dump_data(char *data, int size)
+{
+	if (flags & flag_ShowData)
+	{
+		char tmp[100];
+
+		if (size==0) return;
+
+		token_line_buffer+="[ ";
+
+		for (;size;size--)
+		{
+			sprintf(tmp,"%02X",*data++);
+			token_line_buffer+=tmp;
+		}
+
+		token_line_buffer+=" ] ";
 	}
 }
 
@@ -653,15 +759,16 @@ void code_reader( FILE *fd, unsigned int  tokenlength)
 	printLevel();
 
 	fread( &TokenNumber, 2, 1, fd );	// next;
+	if (flags & flag_ShowTokens)	write_token_line_dump(TokenNumber);
 
 	while (token_reader( fd, LastTokenNumber, TokenNumber, tokenlength ))
 	{
-		if (flags & flag_ShowTokens)	write_token_line_dump(TokenNumber);
 		if (TokenNumber == 0) printLevel();
-
 		LastTokenNumber = TokenNumber;
 		last_token_is = token_is;
+
 		fread( &TokenNumber, 2, 1, fd );	// next;
+		if (flags & flag_ShowTokens)	write_token_line_dump(TokenNumber);
 	}
 }
 
@@ -669,107 +776,138 @@ void code_reader( FILE *fd, unsigned int  tokenlength)
 // not unlike AmigaDOS addpart, but we don't play with static buffer sizes, thats too unsafe.
 // we don't care about Unix / Linux paths, so don't try to decode into AmigaOS.
 
+void init_extensions( void )
+{
+	int n;
+
+	for (n=0;n<STMX;n++) ST_str[n]=NULL;
+	for (n=0;n<extensions_max;n++) extensions[n]=NULL;
+}
+
+void load_extensions( void )
+{
+	char buffer[100];
+	int n;
+
+	for (n=14;n<14+extensions_max;n++)
+	{
+		if (ST_str[n]) if (ST_str[n][0]) 	{
+
+			sprintf(buffer,"AmosPro:APSystem/%s",ST_str[n]);
+			extensions[n-14] = OpenExtension(buffer);
+
+			if ((flags & flag_ShowExtensions) || (flags & flag_verbose))
+			{
+				printf("%02d: %s is%s loaded.\n",n -14, ST_str[n], extensions[n-14] ? "" : " NOT" );
+			}
+		}
+	}
+}
+
+void	free_extensions()
+{
+	int n;
+
+	for (n=0;n<STMX;n++) { if (ST_str[n]) free(ST_str[n]); ST_str[n] = NULL;}
+	for (n=0;n<extensions_max;n++) if (extensions[n]) CloseExtension(extensions[n]);
+}
+
 int main( int args, char **arg )
 {
-	FILE *fd;
+	FILE *fd = NULL;
+	FILE *abk_fd = NULL;
 	char amosid[17];
 	unsigned int tokenlength;
 	unsigned int _length;
 	int n;
-	char buffer[100];
+
 	BOOL show_extension = FALSE;
 	const char **s;
 	char *new_arg[100];
 	int new_args = 1;
 	BOOL is_arg;
+	BOOL config_loaded = FALSE;
+	BOOL ready = FALSE;
 
-
-	if (args>50) return 0;
-
-	new_arg[0]=arg[0];
-	for (n=1;n<args;n++)
-	{
-		is_arg = FALSE;
-
-		for (s=sw;*s;s++)
-		{
-			if (strcasecmp(arg[n],*s)==0)
-			{
-				flags |= 1<<((int) (s-sw));
-				is_arg = TRUE;
-				break;
-			}
-		}
-
-		if (is_arg == FALSE)
-		{
-			printf("%s\n", arg[n]);
-
-			new_arg[new_args]=arg[n];
-			new_args++;
-		}
-	}
-	new_arg[new_args]=NULL;
-
-	if (flags & flag_help)
-	{
-		show_help();
-		return 0;
-	}
+	init_extensions();
 
 	amosid[16] = 0;	// /0 string.
 
 	if (init())
 	{
-		for (n=0;n<STMX;n++) ST_str[n]=NULL;
-		for (n=0;n<extensions_max;n++) extensions[n]=NULL;
-
-		filename = get_filename(new_args,new_arg);
-
-		if (!filename) filename = asl();
-
-		if (filename)
+		if (read_args(args,arg))
 		{
-			char *path;
-			BOOL config_loaded = load_config_try_paths( filename );
+			if (flags & flag_ShowData) flags |= flag_ShowTokens;
 
-			for (n=14;n<14+extensions_max;n++)
+			if (flags & flag_help)
 			{
-				if (ST_str[n]) if (ST_str[n][0]) 	{
-
-					sprintf(buffer,"AmosPro:APSystem/%s",ST_str[n]);
-					extensions[n-14] = OpenExtension(buffer);
-
-					if ((flags & flag_ShowExtensions) || (flags & flag_verbose))
-					{
-						printf("%02d: %s is%s loaded.\n",n -14, ST_str[n], extensions[n-14] ? "" : " NOT" );
-					}
-				}
+				show_help();
+				return 0;
 			}
 
-			fd = fopen(filename,"r");
-			if (fd)
+			config_loaded = load_config_try_paths( amos_filename );
+			if (config_loaded)
 			{
-				fread( amosid, 16, 1, fd );
-				fread( &tokenlength, 4, 1, fd );
-//				fread( &_length, 2, 1, fd );
-				code_reader( fd, tokenlength );
-				fclose(fd);
-			}
-			free(filename);
-
-			if (config_loaded == FALSE)
-			{
-				printf("ERROR: config file not loaded\n");
+				load_extensions();
+				ready = TRUE;
 			}
 		}
-
-		for (n=0;n<STMX;n++) { if (ST_str[n]) free(ST_str[n]); ST_str[n] = NULL;}
-		for (n=0;n<extensions_max;n++) if (extensions[n]) CloseExtension(extensions[n]);
-
-		closedown();
 	}
 
+	if (ready)
+	{
+		if (amos_filename)
+		{
+			fd = fopen(amos_filename,"r");
+			if (fd)
+			{
+				fseek(fd, 0, SEEK_END);
+				amos_filesize = ftell(fd);
+				fseek(fd, 0, SEEK_SET);
+
+				fread( amosid, 16, 1, fd );
+				fread( &tokenlength, 4, 1, fd );
+				code_reader( fd, tokenlength );
+
+				fseek( fd, 16+4+tokenlength, SEEK_SET);
+
+				abk_filesize = amos_filesize - tokenlength - 16 -4;
+
+				if (abk_filename) abk_fd = fopen( abk_filename, "w" );
+
+				if ((abk_fd)&&(abk_filesize>0))
+				{
+					char *data = (char *) malloc(abk_filesize);
+
+					if (data)
+					{
+						fread(data,abk_filesize,1,fd);
+						fwrite(data,abk_filesize,1,abk_fd);
+
+						free(data);
+					}
+				}
+				if (abk_fd) fclose(abk_fd);
+
+				fclose(fd);
+			}
+
+			free(amos_filename);	
+		}
+	}
+	else
+	{
+		printf("nothing happened here\n");
+		printf("try --help\n");
+	}
+
+	if (config_loaded == FALSE)
+	{
+		printf("ERROR: config file not loaded\n");
+	}
+
+	free_extensions();
+	closedown();
 
 	return 0;
 }
