@@ -9,20 +9,20 @@ Amos or Amos Profersonal, also know as "Amos the creator", is a basic lanuage di
 The language was first developed for Atari at time it was called STOS, then development continued on 
 Amiga computers, AMOS/STOS is creation of "Francois Lionet".
 
-Sadly development of language stopped, at when language was developed, 
+Sadly development of language stopped no updates for AGA graphics or CGX/P96. When language was developed, 
 there was lack of space on floppy disks, there were no drivers, there was lack of gadgets/widgets, 
 and graphic library's to help aid developers, AMOS made development easy, compared to learning assembler,
 and it lot faster than other Basic versions when it was released. 
 
 I not sure way but AMOS does not use ASCII for source code, it used binary format,
-where etch command is encoded as hex dismal unsigned short or uint16 if you like.
+where etch command is encoded as a hex dismal unsigned short or uint16 if you like.
 Some tokens have additional flags or options, or data that is attached to it.
 
 This tool is excellent for converting AMOS Pro code to ASCII, is also excellent for debugging,
 as tool as additional option to show tokens and data, it also be used extract ABK file from AMOS source code,
 ABK is like archive that can contain samples, images, sprites, icons, menus and lots more.
 
-You also use this tool if AMOS pro refuses to load AMOS file, because it corrupted or not complete,
+You can also use this tool if AMOS pro refuses to load AMOS file, because it corrupted or not complete,
 this tool does not care, if you have half of a file or complete file.
 
 About this program:
