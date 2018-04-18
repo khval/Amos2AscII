@@ -16,12 +16,14 @@
 #include "Amos2ascii.exe_rev.h"
 STRPTR USED ver = (STRPTR) VERSTAG;
 
+
 struct extension *extensions[extensions_max];
 
 void write_token_line_dump(int TokenNumber);
 void dump_data(char *data, int size);
 
 std::string token_line_buffer;
+
 
 int token_is = is_newline;
 int last_token_is = is_newline;
@@ -38,6 +40,8 @@ ULONG flags = 0;
 
 char *amos_filename = NULL;
 char *abk_filename = NULL;
+
+char *data_read_pointer = NULL;
 
 BOOL equal_symbol = FALSE;
 
@@ -137,40 +141,6 @@ BOOL read_args(int args, char **arg)
 	return TRUE;
 }
 
-// structs are used read chunks of the AMOS file, so they need to be packed.
-
-
-struct tokenStart {
-	char length;
-	char level;
-} __attribute__((packed)) ;
-
-struct extensionCommand
-{
-	unsigned char extention_number;
-	unsigned char alignment16bit;			// maybe length
-	unsigned short ExtentionTokenTable;
-} __attribute__((packed)) ;
-
-struct reference
-{
-	short unknown;
-	char	length;
-	char flags;
-} __attribute__((packed)) ;
-
-struct procedure
-{
-	unsigned int ProcLength;
-	unsigned short seed;
-	char flags;
-	char seed2;
-} __attribute__((packed)) ;
-
-struct rem
-{
-	unsigned short length;
-};
 
 BOOL token_reader( FILE *fd, unsigned short lastToken, unsigned short token, unsigned int tokenlength );
 
@@ -359,28 +329,39 @@ void cmdInt(FILE *fd,char *ptr)
 	printf("%d", *((int *) ptr));
 }
 
+/*
+void showBin( int ddd )
+{
+	int n= 0;
+
+//	ddd = ~ddd;
+
+	for (n=128;n;n/=2)
+	{
+		printf("%d", ddd & n ? 1 : 0 );
+	}
+}
+*/
+
 void cmdFloat(FILE *fd,char *ptr)
 {
 	unsigned int data = *((unsigned int *) ptr);
 	unsigned int number1 = data >> 8;
-	int e = (data & 31) ;
-	if (data & 32) e |= 0xFFFFFFE0;
+	int e = (data & 0x3F) ;
 	int n;
 	double f = 0.0f;
 
+	if ( (data & 0x40)  == 0)	e = -(65 - e);
+
 	for (n=23;n>-1;n--)
 	{
-		if ((1<<n)&number1)
-		{
-			f += 1.0f / (double) (1<<(23-n));
-		}
+		if ((1<<n)&number1) f += 1.0f / (double) (1<<(23-n));
 	}
 
-	if (e>0)	f *= 1 <<e-1;
-	if (e==0)	f /= 2;
-	if (e<0)	f /= 1<<(-e+1);
+	if (e>0) {   while (--e) { f *= 2.0; } }
+	if (e<0) { while (e) {  f /= 2.0f; e++; } }
 
-	printf("%f", round( f *1000 ) / 1000.0f  );
+	printf("%0.20f",  f  );
 }
 
 void cmdHex(FILE *fd,char *ptr)
