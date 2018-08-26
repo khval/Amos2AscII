@@ -333,6 +333,7 @@ struct nativeCommand NativeCommand[]=
 	{0x132A,"Wind Save"},
 	{0x133A,"Wind Move"},
 	{0x134C,"Wind Size"},
+	{0x135E,"Window"},
 	{0x1378,"Locate"},
 	{0x1388,"Clw"},
 	{0x1392,"Home"},
@@ -366,6 +367,7 @@ struct nativeCommand NativeCommand[]=
 	{0x155C,"Memorize Y"},
 	{0x157C,"Cmove"},
 	{0x158A,"Cline"},
+	{0x1596,"Cline"},			// =Cline(n)
 	{0x159E,"Hscroll"},
 	{0x15AC,"Vscroll"},
 	{0x15BA,"Set Tab"},
@@ -383,6 +385,7 @@ struct nativeCommand NativeCommand[]=
 	{0x1668,"Set Zone"},
 	{0x1680,"Zone"},		// =Zone( x, y )
 	{0x168E,"Zone"},
+	{0x16AA,"Hzone"},
 	{0x16B6,"Scin"},
 	{0x16D0,"Mouse Screen"},
 	{0x16E2,"Mouse Zone"},
