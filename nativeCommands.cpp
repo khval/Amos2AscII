@@ -443,6 +443,7 @@ struct nativeCommand NativeCommand[]=
 	{0x1B06,"Bob Draw"},
 	{0x1B14,"Bobsprite Col"},	// Bobsprite Col(n,n To n)
 	{0x1B36,"Bob Col"},
+	{0x1B46,"Bob Col"},		// bob Col(1,3 To 5)
 	{0x1B52,"Col"},
 	{0x1B5C,"Limit Bob"},		// Limit Bob	n,x,y To x,y
 	{0x1B6C,"Limit Bob" },
