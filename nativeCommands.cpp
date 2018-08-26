@@ -262,7 +262,7 @@ struct nativeCommand NativeCommand[]=
 	{0x0E3C,"Plot"},
 	{0x0E4A,"Plot"},
 	{0x0E56,"Point"},
-	{0x0E64,"Draw"},			// Draw To x,y
+	{0x0E64,"Draw To"},			// Draw To x,y
 	{0x0E74,"Draw"},			// Draw x,y To X,y
 	{0x0E86,"Ellipse"},			// Ellipse x,y,rx,ry
 	{0x0E9A,"Circle"},			// Circle x,y,r
