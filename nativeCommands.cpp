@@ -224,7 +224,9 @@ struct nativeCommand NativeCommand[]=
 	{0x0BC0,"Cls"},	// CLS color,x,y to x,y
 	{0x0BD0,"Def Scroll"},
 	{0x0BEE,"X Hard"},
+	{0x0BFC,"X Hard"},
 	{0x0C06,"Y Hard"},
+	{0x0C14,"Y Hard"},
 	{0x0C1E,"X Screen"},
 	{0x0C2E,"X Screen"}, 	// X Screen( screen, x )
 	{0x0C38,"Y Screen"},
