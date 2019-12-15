@@ -152,9 +152,9 @@ BOOL load_config_try_paths( char *filename)
 	char *_path;	// tmp path
 	const char *paths[] =
 		{
-			"amospro:s",
 			"s:",
 			"progdir:",
+			"amospro_system:s",
 			NULL,
 		};
 
