@@ -3,7 +3,7 @@ Translate Token AMOS Source code into ASCII Source code
 
 Amos2AscII works as Amiga Icon tool, can started just clicking on it, or from shell.
 
-What heck is this?
+What the heck is this?
 ------------------
 Amos or Amos Profersonal, also know as "Amos the creator", is a basic lanuage dialect. 
 The language was first developed for Atari at time it was called STOS, then development continued on 
@@ -18,11 +18,11 @@ I not sure way but AMOS does not use ASCII for source code, it used binary forma
 where etch command is encoded as a hex dismal unsigned short or uint16 if you like.
 Some tokens have additional flags or options, or data that is attached to it.
 
-This tool is excellent for converting AMOS Pro code to ASCII, is also excellent for debugging,
-as tool as additional option to show tokens and data, it also be used extract ABK file from AMOS source code,
+This tool is excellent for converting AMOS Pro code to ASCII, its also excellent for debugging,
+as tool as additional option to show tokens and data, it also can be used extract ABK file from AMOS source code,
 ABK is like archive that can contain samples, images, sprites, icons, menus and lots more.
 
-You can also use this tool if AMOS pro refuses to load AMOS file, because it corrupted or not complete,
+You can also use this tool if AMOS pro refuses to load AMOS file, because it's corrupted or not complete,
 this tool does not care, if you have half of a file or complete file.
 
 About this program:
@@ -43,15 +43,15 @@ This program uses AmosExtension.library to obtain Command names from Amos extens
 program will try to read config file from this paths, in this coder.
 
 1. <path to .amos file>/AMOSPro_Interpreter_Config
-2. amospro:s/AMOSPro_Interpreter_Config
-3. s:AMOSPro_Interpreter_Config
-4. progdir:AMOSPro_Interpreter_Config
+2. s:AMOSPro_Interpreter_Config
+3. progdir:AMOSPro_Interpreter_Config
+4. amospro_system:s/AMOSPro_Interpreter_Config
 
 program will try the next until it find it.
 
 Unlike AmosPro this program look for AMOSPro_Interpreter_Config in <path to .amos file>,
 this is because, *.AMOS token files might not use the same extensions, and mismatch between 
-extensions is possible between source codes. amospro:s is next logical place if your read of ADF image or floppy disk.
+extensions is possible between source codes. amospro_system:s is next logical place if your read of ADF image or floppy disk.
 s: if its installed to HD, and progrdir if AMOSPRO is not found, in this case it fail to load extensions ;-), 
 because it wont be able to find any.
 
