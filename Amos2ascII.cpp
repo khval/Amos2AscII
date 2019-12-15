@@ -74,6 +74,9 @@ struct cli_arg arg_list[]=
 	{"--show-data",flag_ShowData,0,NULL},
 	{"-d",flag_ShowData,0,NULL},
 
+	{"--show-linenumbers",flag_ShowLineNumbers,0,NULL},
+	{"-l",flag_ShowLineNumbers,0,NULL},
+
 	// file options
 	{"FROM", 0, e_string, &amos_filename},
 	{"-s",0, e_string, &amos_filename},
@@ -90,6 +93,8 @@ void show_help()
 	printf("-e, --show-extensions\n\n\tShow loaded extensions\n\n");
 	printf("-t, --show-tokens\n\n\tShow tokens on the next line\n\n");
 	printf("-d, --show-data\n\n\tShow tokens and data on the next line\n\n");
+	printf("-l, --show-linenumbers\n\n\tShow tokens and data on the next line\n\n");
+
 	printf("-s,FROM\n");
 	printf("\tAMOS file to convert\n\n");
 	printf("-a,--abk-out");
@@ -520,7 +525,15 @@ void cmdNewLine(FILE *fd,char *ptr)
 	int n;
 	struct tokenStart *TokenStart = (struct tokenStart *) ptr;
 	linenumber++;
-	printf("\n");
+
+	if (flags & flag_ShowLineNumbers)
+	{
+		printf("\n%-6d ",linenumber);
+	}
+	else 
+	{
+		printf("\n");
+	}
 
 	global_level = TokenStart->level;
 
