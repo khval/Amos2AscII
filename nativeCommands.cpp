@@ -335,6 +335,7 @@ struct nativeCommand NativeCommand[]=
 	{0x132A,"Wind Save"},
 	{0x133A,"Wind Move"},
 	{0x134C,"Wind Size"},
+	{0x136C,"Windon"},
 	{0x135E,"Window"},
 	{0x1378,"Locate"},
 	{0x1388,"Clw"},
@@ -620,6 +621,8 @@ struct nativeCommand NativeCommand[]=
 	{0x2578,"Set Accessory"},
 	{0x258C,"@_apml_@"},
 	{0x259A,"Trap"},
+	{0x25A4,"Else If"},
+	{0x25B2,"Include" },
 	{0x25C0,"Array"},
 	{0x25CC,"Frame Load"},
 	{0x25E0,"Frame Load"},		//	Frame Load(n To n,n)
