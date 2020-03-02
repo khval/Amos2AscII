@@ -182,7 +182,6 @@ void cmdExtensionCommand(FILE *fd,char *ptr)
 {
 	struct extensionCommand *e = (struct extensionCommand *) ptr;
 	struct TokenInfo *info;
-	BOOL found = FALSE;
 	char *name = NULL;
 	char buf[100];
 
@@ -190,8 +189,6 @@ void cmdExtensionCommand(FILE *fd,char *ptr)
 	{
 		if ( name = GetExtensionNameByToken( extensions[e->extention_number], e->ExtentionTokenTable ))
 		{
-			found = TRUE;
-
 			sprintf(buf,"[%08x]", *((int *) e));
 
 			token_line_buffer+="*";
@@ -204,14 +201,13 @@ void cmdExtensionCommand(FILE *fd,char *ptr)
 		}
 		else
 		{
-			printf("Command_%d_[%s]_%x_found_no_name", 
+			printf("Command_%d_[%s]_[0x%04x]", 
 				e->extention_number, 
 				(ST_str[e->extention_number+14] ? ST_str[e->extention_number+14] : "") , 
 				e->ExtentionTokenTable);
 		}
 	}
-
-	if (found == FALSE)
+	else
 	{
 		printf("Command_%d_%x", e->extention_number, e->ExtentionTokenTable);
 	}
