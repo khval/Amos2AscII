@@ -141,6 +141,7 @@ struct nativeCommand NativeCommand[]=
 	{0x0662,"Match"},	// =Match( array, str )
 	{0x0670,"Edit"},
 	{0x067A,"Direct"},
+//	{0x0680,""},
 	{0x0686,"Rnd"},
 	{0x0690,"Randomize" },
 	{0x06A0,"Sgn"},
@@ -210,6 +211,8 @@ struct nativeCommand NativeCommand[]=
 	{0x0ADA,"Screen Show"},
 	{0x0AE2,"Screen Swap"},
 	{0x0AF4,"Screen Swap"},
+	{0x0AFC,"Save Iff"},
+	{0x0B0C,"Save iff"},
 	{0x0B16,"View"},				// View
 	{0x0B20,"Auto View Off"},
 	{0x0B34,"Auto View On"},
@@ -233,8 +236,8 @@ struct nativeCommand NativeCommand[]=
 	{0x0C48,"Y Screen"},	// Y Screen( screen, y )
 	{0x0C52,"X Text"},
 	{0x0C60,"Y Text"},
-	{0x0C6E,"Screen"},		// setScreen
-	{0x0C7C,"Screen"},	// getScreen
+	{0x0C6E,"Screen"},			// setScreen
+	{0x0C7C,"Screen"},			// getScreen
 	{0x0C84,"Hires"},
 	{0x0C90,"Lowres"},
 	{0x0C9C,"Dual Playfield"},
@@ -433,6 +436,7 @@ struct nativeCommand NativeCommand[]=
 	{0x199E,"Sprite Off"},
 	{0x19B0,"Sprite Off"},
 	{0x1A10,"Spritebob Col"},
+	{0x1A32,"Sprite Col"},	//	=Sprite Col( n )
 	{0x1A44,"Sprite Col"},	//	=Sprite Col( n,n To n )
 	{0x1A72,"Sprite Base"},
 	{0x1A84,"Icon Base"},
