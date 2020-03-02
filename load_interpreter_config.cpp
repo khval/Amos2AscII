@@ -142,6 +142,11 @@ BOOL try_config( const char *path, char *config_name)
 		free(config_full_name);
 	}
 
+	if (flags & flag_verbose)
+	{
+		printf("config loaded: %s\n",config_loaded ? "True" : "False");
+	}
+
 	return config_loaded;
 }
 
