@@ -77,6 +77,9 @@ struct cli_arg arg_list[]=
 	{"--show-linenumbers",flag_ShowLineNumbers,0,NULL},
 	{"-l",flag_ShowLineNumbers,0,NULL},
 
+	{"--show-config",flag_ShowConfig,0,NULL},
+	{"-c",flag_ShowConfig,0,NULL},
+
 	// file options
 	{"FROM", 0, e_string, &amos_filename},
 	{"-s",0, e_string, &amos_filename},

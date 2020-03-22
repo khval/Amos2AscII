@@ -43,6 +43,9 @@ void process_load( char *mem )
 				L=Peek(A+1) ;
 				 if (L==0xFF) break;
 				ST_str[ST-1]=Peek_str(A+2,L);
+
+				if ( flags & flag_ShowConfig) printf("%-3d:%s\n",ST, ST_str[ST-1]);
+
 				A+=L+2;
 			} 
 		} 
