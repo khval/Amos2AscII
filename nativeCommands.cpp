@@ -435,6 +435,8 @@ struct nativeCommand NativeCommand[]=
 	{0x1986,"Set Sprite Buffer"},
 	{0x199E,"Sprite Off"},
 	{0x19B0,"Sprite Off"},
+	{0x19CE,"Sprite Update Off"},
+	{0x19FC,"Sprite Update"},
 	{0x1A10,"Spritebob Col"},
 	{0x1A32,"Sprite Col"},	//	=Sprite Col( n )
 	{0x1A44,"Sprite Col"},	//	=Sprite Col( n,n To n )
